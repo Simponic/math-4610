@@ -15,9 +15,10 @@
       :description "derivative at is within bounds"
       (let ((f (lambda (x) (* x x)))
             (x 2)
+            (accepted-delta 0.02)
             (f-prime-at-x 4)
             (delta 0.01))
         (is (within-range-p
               (derivative-at f x delta)
               f-prime-at-x
-              0.1))))
+              accepted-delta))))

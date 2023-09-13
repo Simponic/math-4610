@@ -1,4 +1,5 @@
 (in-package :cl-user)
 (defpackage lizfcm.utils
   (:use :cl)
-  (:export :within-range-p))
+  (:export :within-range-p
+           :table))

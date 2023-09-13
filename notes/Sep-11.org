@@ -1,0 +1,93 @@
+#+TITLE: Errors
+#+AUTHOR: Elizabeth Hunt
+#+STARTUP: entitiespretty fold inlineimages
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,landscape]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
+
+* Errors
+$x,y \in \mathds{R}$, using y as a way to approximate x. Then the
+absolute error of in approximating x w/ y is $e_{abs}(x, y) = |x-y|$.
+
+and the relative error is $e_{rel}(x, y) = \frac{|x-y|}{|x|}$
+
+Table of Errors
+
+#+BEGIN_SRC lisp :results table
+  (load "../cl/lizfcm.asd")
+  (ql:quickload 'lizfcm)
+
+  (defun eabs (x y) (abs (- x y)))
+  (defun erel (x y) (/ (abs (- x y)) (abs x)))
+
+  (defparameter *u-v* '(
+                        (1    0.99)
+                        (1    1.01)
+                        (-1.5 -1.2)
+                        (100  99.9)
+                        (100  99)
+                        ))
+
+  (lizfcm.utils:table (:headers '("u" "v" "e_{abs}" "e_{rel}")
+                       :domain-order (u v)
+                       :domain-values *u-v*)
+    (fround (eabs u v) 4)
+    (fround (erel u v) 4))
+#+END_SRC
+
+#+RESULTS:
+|    u |    v | e_{abs} | e_{rel} |
+|    1 | 0.99 |  0.0 |  0.0 |
+|    1 | 1.01 |  0.0 |  0.0 |
+| -1.5 | -1.2 |  0.0 |  0.0 |
+|  100 | 99.9 |  0.0 |  0.0 |
+|  100 |   99 |  0.0 |  0.0 |
+
+Look at $u \approx 0$ then $v \approx 0$, $e_{abs}$ is better error since $e_{rel}$ is high.
+
+* Vector spaces & measures
+Suppose we want solutions fo a linear system of the form $Ax = b$, and we want to approximate $x$,
+we need to find a form of "distance" between vectors in $\mathds{R}^n$
+
+** Vector Distances
+A norm on a vector space $|| v ||$ is a function from $\mathds{R}^n$ such that:
+
+1. $||v|| \geq 0$ for all $v \in \mathds{R}^n$ and $||v|| = \Leftrightarrow v = 0$
+2. $||cv|| = |c| ||v||$ for all $c \in \mathds{R}, v \in \mathds{R}^n$
+3. $||x + y|| \leq ||x|| + ||y|| \forall x,y \in \mathds{R}^n$
+
+*** Example norms:
+$||v||_2 = || [v_1, v_2, \dots v_n] || = (v_1^2 + v_2^2 + \dots + v_n^2)^{}^{\frac{1}{2}}$
+
+$||v||_1 = |v_1| + |v_2| + \dots + |v_n|$
+
+$||v||_{\infty} = \text{max}(|v_i|)$ (most restriction)
+
+p-norm:
+$||v||_p = \sum_{i=1}^{h} (|v_i|^p)^{\frac{1}{p}}$
+
+** Length
+The length of a vector in a given norm is $||v|| \forall v \in \mathds{R}^n$
+
+All norms on finite dimensional vectors are equivalent. Then exist constants
+$\alpha, \beta > 0 \ni \alpha ||v||_p \leq ||v||_q \leq \beta||v||_p$
+
+** Distance
+Let $u,v$ be vectors in $\mathds{R}^n$ then the distance is $||u - v||$ by some norm:
+$e_{abs} = d(v, u) = ||u - v||$
+
+The relative errors is:
+
+$e_{rel} = \frac{||u - v||}{||v||}$
+
+
+** Approxmiating Solutions to $Ax = b$
+We define the residual vector $r(x) = b - Ax$
+
+If $x$ is the exact solution, then $r(x) = 0$.
+
+Then we can measure the "correctness" of the approximated solution on the norm of the
+residual. We want to minimize the norm.
+
+But, $r(y) = b - Ay \approx 0 \nRightarrow y \equiv x$, if $A$ is not invertible.
+

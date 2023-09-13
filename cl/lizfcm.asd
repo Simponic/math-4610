@@ -7,6 +7,7 @@
                                       ((:module "utils"
                                                 :components
                                                 ((:file "within-range" :depends-on ("package"))
+                                                 (:file "table" :depends-on ("package"))
                                                  (:file "package")))
                                        (:module "approx"
                                                 :components
@@ -21,7 +22,8 @@
                               :lizfcm)
                 :components ((:module "tests"
                                       :components
-                                      ((:file "approx" :depends-on ("suite"))
+                                      ((:file "table" :depends-on ("suite"))
+                                       (:file "approx" :depends-on ("suite"))
                                        (:file "suite"))))
                 :perform (asdf:test-op (o c) (uiop:symbol-call
                                                :fiveam :run!

@@ -1,0 +1,16 @@
+* Homework 2
+1. maceps - single precision
+
+2. maceps - double precision
+
+3. 2-norm of a vector
+
+4. 1-norm of a vector
+
+5. infinity-norm of a vector (max-norm)
+
+6. 2-norm distance between 2 vectors
+
+7. 1-norm distance between 2 vectors
+
+8. infinity-norm distance

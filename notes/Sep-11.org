@@ -31,17 +31,18 @@ Table of Errors
   (lizfcm.utils:table (:headers '("u" "v" "e_{abs}" "e_{rel}")
                        :domain-order (u v)
                        :domain-values *u-v*)
-    (fround (eabs u v) 4)
-    (fround (erel u v) 4))
+    (eabs u v)
+    (erel u v))
 #+END_SRC
 
 #+RESULTS:
-|    u |    v | e_{abs} | e_{rel} |
-|    1 | 0.99 |  0.0 |  0.0 |
-|    1 | 1.01 |  0.0 |  0.0 |
-| -1.5 | -1.2 |  0.0 |  0.0 |
-|  100 | 99.9 |  0.0 |  0.0 |
-|  100 |   99 |  0.0 |  0.0 |
+|    u |    v |        e_{abs} |         e_{rel} |
+|    1 | 0.99 |  0.00999999 |   0.00999999 |
+|    1 | 1.01 |  0.00999999 |   0.00999999 |
+| -1.5 | -1.2 |  0.29999995 |   0.19999997 |
+|  100 | 99.9 | 0.099998474 | 0.0009999848 |
+|  100 |   99 |           1 |        1/100 |
+
 
 Look at $u \approx 0$ then $v \approx 0$, $e_{abs}$ is better error since $e_{rel}$ is high.
 

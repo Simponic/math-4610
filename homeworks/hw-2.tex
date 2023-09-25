@@ -1,0 +1,243 @@
+% Created 2023-09-25 Mon 09:52
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+\author{Elizabeth Hunt}
+\date{\today}
+\title{HW 02}
+\hypersetup{
+ pdfauthor={Elizabeth Hunt},
+ pdftitle={HW 02},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setlength\parindent{0pt}
+
+\section{Question One}
+\label{sec:orga203815}
+Computing \(\epsilon_{\text{mac}}\) for single precision numbers
+
+\begin{verbatim}
+(load "../cl/lizfcm.asd")
+(ql:quickload :lizfcm)
+
+(let ((domain-values (lizfcm.approx:compute-maceps 1.0
+                                                   (lambda (x) x))))
+  (lizfcm.utils:table (:headers '("a" "h" "err")
+                       :domain-order (a h err)
+                       :domain-values domain-values)))
+\end{verbatim}
+
+(with many rows truncated)
+
+\begin{center}
+\begin{tabular}{rrr}
+a & h & err\\[0pt]
+1.0 & 0.5 & 0.5\\[0pt]
+1.0 & 0.25 & 0.25\\[0pt]
+1.0 & 0.125 & 0.125\\[0pt]
+1.0 & 0.0625 & 0.0625\\[0pt]
+1.0 & 1.9073486e-06 & 1.9073486e-06\\[0pt]
+1.0 & 9.536743e-07 & 9.536743e-07\\[0pt]
+1.0 & 4.7683716e-07 & 4.7683716e-07\\[0pt]
+1.0 & 2.3841858e-07 & 2.3841858e-07\\[0pt]
+1.0 & 1.1920929e-07 & 1.1920929e-07\\[0pt]
+1.0 & 5.9604645e-08 & 0.0\\[0pt]
+\end{tabular}
+\end{center}
+
+\(\epsilon_{\text{mac}}\) \(\approx\) 5.9604 \(\cdot\) 10\textsuperscript{-8}
+
+\section{Question Two}
+\label{sec:orgdd79be1}
+Computing \(\epsilon_{\text{mac}}\) for double precision numbers:
+
+\begin{verbatim}
+(let ((domain-values (lizfcm.approx:compute-maceps 1.0d0
+                                                   (lambda (x) x))))
+  (lizfcm.utils:table (:headers '("a" "h" "err")
+                       :domain-order (a h err)
+                       :domain-values domain-values)))
+\end{verbatim}
+
+(with many rows truncated)
+\begin{center}
+\begin{tabular}{rrr}
+a & h & err\\[0pt]
+1.0d0 & 0.5d0 & 0.5d0\\[0pt]
+1.0d0 & 0.25d0 & 0.25d0\\[0pt]
+1.0d0 & 0.125d0 & 0.125d0\\[0pt]
+1.0d0 & 0.0625d0 & 0.0625d0\\[0pt]
+1.0d0 & 0.03125d0 & 0.03125d0\\[0pt]
+1.0d0 & 0.015625d0 & 0.015625d0\\[0pt]
+1.0d0 & 0.0078125d0 & 0.0078125d0\\[0pt]
+1.0d0 & 0.00390625d0 & 0.00390625d0\\[0pt]
+1.0d0 & 0.001953125d0 & 0.001953125d0\\[0pt]
+1.0d0 & 7.105427357601002d-15 & 7.105427357601002d-15\\[0pt]
+1.0d0 & 3.552713678800501d-15 & 3.552713678800501d-15\\[0pt]
+1.0d0 & 1.7763568394002505d-15 & 1.7763568394002505d-15\\[0pt]
+1.0d0 & 8.881784197001252d-16 & 8.881784197001252d-16\\[0pt]
+1.0d0 & 4.440892098500626d-16 & 4.440892098500626d-16\\[0pt]
+1.0d0 & 2.220446049250313d-16 & 2.220446049250313d-16\\[0pt]
+1.0d0 & 1.1102230246251565d-16 & 0.0d0\\[0pt]
+\end{tabular}
+\end{center}
+
+Thus, \(\epsilon_{\text{mac}}\) \(\approx\) 1.1102 \(\cdot\) 10\textsuperscript{-16}
+
+\section{Question Three - |v|\textsubscript{2}}
+\label{sec:org04608d9}
+\begin{verbatim}
+(let ((vs '((1 1) (2 3) (4 5) (-1 2)))
+      (2-norm (lizfcm.vector:p-norm 2)))
+  (lizfcm.utils:table (:headers '("x" "y" "2norm")
+                       :domain-order (x y)
+                       :domain-values vs)
+    (funcall 2-norm (list x y))))
+\end{verbatim}
+
+
+\begin{center}
+\begin{tabular}{rrr}
+x & y & 2norm\\[0pt]
+1 & 1 & 1.4142135\\[0pt]
+2 & 3 & 3.6055512\\[0pt]
+4 & 5 & 6.4031243\\[0pt]
+-1 & 2 & 2.236068\\[0pt]
+\end{tabular}
+\end{center}
+
+\section{Question Four - |v|\textsubscript{1}}
+\label{sec:orgfb57f3a}
+\begin{verbatim}
+(let ((vs '((1 1) (2 3) (4 5) (-1 2)))
+      (1-norm (lizfcm.vector:p-norm 1)))
+  (lizfcm.utils:table (:headers '("x" "y" "1norm")
+                       :domain-order (x y)
+                       :domain-values vs)
+    (funcall 1-norm (list x y))))
+\end{verbatim}
+
+
+\begin{center}
+\begin{tabular}{rrr}
+x & y & 1norm\\[0pt]
+1 & 1 & 2\\[0pt]
+2 & 3 & 5\\[0pt]
+4 & 5 & 9\\[0pt]
+-1 & 2 & 3\\[0pt]
+\end{tabular}
+\end{center}
+
+\section{Question Five - |v|\textsubscript{\(\infty\)}}
+\label{sec:org7bbdf04}
+\begin{verbatim}
+(let ((vs '((1 1) (2 3) (4 5) (-1 2))))
+  (lizfcm.utils:table (:headers '("x" "y" "max-norm")
+                       :domain-order (x y)
+                       :domain-values vs)
+    (lizfcm.vector:max-norm (list x y))))
+\end{verbatim}
+
+
+\begin{center}
+\begin{tabular}{rrr}
+x & y & infty-norm\\[0pt]
+1 & 1 & 1\\[0pt]
+2 & 3 & 3\\[0pt]
+4 & 5 & 5\\[0pt]
+-1 & 2 & 2\\[0pt]
+\end{tabular}
+\end{center}
+
+\section{Question Six - ||v - u|| via |v|\textsubscript{2}}
+\label{sec:orge36996c}
+\begin{verbatim}
+(let* ((vs '((1 1) (2 3) (4 5) (-1 2)))
+       (vs2 '((7 9) (2 2) (8 -1) (4 4)))
+       (2-norm (lizfcm.vector:p-norm 2)))
+  (lizfcm.utils:table (:headers '("v1" "v2" "2-norm-d")
+                       :domain-order (v1 v2)
+                       :domain-values (mapcar (lambda (v1 v2)
+                                                (list v1 v2))
+                                              vs
+                                              vs2))
+    (lizfcm.vector:distance v1 v2 2-norm)))
+\end{verbatim}
+
+
+\begin{center}
+\begin{tabular}{llr}
+v1 & v2 & 2-norm\\[0pt]
+(1 1) & (7 9) & 10.0\\[0pt]
+(2 3) & (2 2) & 1.0\\[0pt]
+(4 5) & (8 -1) & 7.2111025\\[0pt]
+(-1 2) & (4 4) & 5.3851647\\[0pt]
+\end{tabular}
+\end{center}
+
+\section{Question Seven - ||v - u|| via |v|\textsubscript{1}}
+\label{sec:orgd1577f0}
+\begin{verbatim}
+(let* ((vs '((1 1) (2 3) (4 5) (-1 2)))
+       (vs2 '((7 9) (2 2) (8 -1) (4 4)))
+       (1-norm (lizfcm.vector:p-norm 1)))
+  (lizfcm.utils:table (:headers '("v1" "v2" "1-norm-d")
+                       :domain-order (v1 v2)
+                       :domain-values (mapcar (lambda (v1 v2)
+                                                (list v1 v2))
+                                              vs
+                                              vs2))
+    (lizfcm.vector:distance v1 v2 1-norm)))
+\end{verbatim}
+
+
+\begin{center}
+\begin{tabular}{llr}
+v1 & v2 & 1-norm-d\\[0pt]
+(1 1) & (7 9) & 14\\[0pt]
+(2 3) & (2 2) & 1\\[0pt]
+(4 5) & (8 -1) & 10\\[0pt]
+(-1 2) & (4 4) & 7\\[0pt]
+\end{tabular}
+\end{center}
+
+\section{Question Eight - ||v - u|| via |v|\textsubscript{\(\infty\)}}
+\label{sec:org2661676}
+\begin{verbatim}
+(let* ((vs '((1 1) (2 3) (4 5) (-1 2)))
+       (vs2 '((7 9) (2 2) (8 -1) (4 4))))
+  (lizfcm.utils:table (:headers '("v1" "v2" "max-norm-d")
+                       :domain-order (v1 v2)
+                       :domain-values (mapcar (lambda (v1 v2)
+                                                (list v1 v2))
+                                              vs
+                                              vs2))
+    (lizfcm.vector:distance v1 v2 'lizfcm.vector:max-norm)))
+\end{verbatim}
+
+\begin{center}
+\begin{tabular}{llr}
+v1 & v2 & max-norm-d\\[0pt]
+(1 1) & (7 9) & -6\\[0pt]
+(2 3) & (2 2) & 1\\[0pt]
+(4 5) & (8 -1) & 6\\[0pt]
+(-1 2) & (4 4) & -2\\[0pt]
+\end{tabular}
+\end{center}
+\end{document}

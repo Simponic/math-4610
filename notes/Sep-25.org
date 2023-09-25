@@ -1,0 +1,48 @@
+ex: erfc(x) = \int_{0}^x (\frac{2}{\sqrt{pi}})e^{-t^2 }dt
+ex: IVP \frac{dP}{dt} = \alpha P - \beta P^2
+        P(0) = P_0
+
+Explicit Euler Method
+
+$\frac{P(t + \Delta t) - P(t)}{\Delta t} \approx \alpha P(t) - \beta P^2(t)$
+
+From 0 \rightarrow T
+P(T) \approx n steps
+
+* Steps
+** Calculus: defference quotient
+$f'(a) \approx \frac{f(a+h) - f(a)}{h}$
+
+** Test.
+Roundoff for h \approx 0
+
+** Calculus: Taylor Serioes w/ Remainder
+$e_{abs}(h) \leq Ch^r$
+
+(see Sep-20 . Taylor Series)
+
+* Pseudo Code
+#+BEGIN_SRC python
+  for i in range(n):
+    a12 = a12 + x[i+1]
+    a22 = a22 + x[i+1]**2
+  a21 = a12
+  b1 = y[0]
+  b2 = y[0] * x[0]
+  for i in range(n):
+    b1 = b1 + y[i+1]
+    b2 = b2 + y[i+1]*x[i+1]
+  detA = a22*a11 - a12*a21
+  c = (a22*b1 - a12*b2) / detA
+  d = (-a21 * b1 + a11 * b2) / detA
+
+  return (c, d)
+#+END_SRC
+
+* Error
+We want
+$e_k = |df(h_kk) - f'(a)|$
+
+$= |df(h_k) - df(h_m) + df(h_m) - f'(a)|$
+
+$\leq |df(h_k) - df(h_m)| + |df(h_m) - f'(a)|$ and $|df(h_m) - f'(a)|$ is negligible

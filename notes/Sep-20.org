@@ -1,0 +1,21 @@
+* Review & Summary
+Approx f'(a) with
+
++ forward difference $f'(a) \approx \frac{f(a+h) - f(a)}{h}$
+
++ backward difference $f'(a) \approx \frac{f(a) - f(a-h)}{h}$
+
++ central difference $f'(a) \approx \frac{f(a+h) - f(a-h)}{2h}$
+
+** Taylor Series
+given $C = \frac{1}{2}(|f''(\xi)|) \cdot h^1$
+
+with f.d. $e_{\text{abs}} \leq Ch^1$
+
+b.d.  $e_{\text{abs}} \leq Ch^1$
+
+c.d. $e_{\text{abs}} \leq Ch^2$
+
+$e_{\text{abs}} \leq Ch^r$
+
+$log(e(h)) \leq log(ch^r) = log(C) + log(h^r) = log(C) + rlog(h)$

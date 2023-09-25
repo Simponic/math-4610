@@ -1,0 +1,45 @@
+* regression
+consider the generic problem of fitting a dataset to a linear polynomial
+
+given discrete f: x \rightarrow y
+
+interpolation: y = a + bx
+
+[[1 x_0]            [[y_0]
+ [1 x_1]  \cdot [[a]  =   [y_1]
+ [1 x_n]]   [b]]     [y_n]]
+
+consider p \in col(A)
+
+then y = p + q for some q \cdot p = 0
+
+then we can generate n \in col(A) by $Az$ and n must be orthogonal to q as well
+
+(Az)^T \cdot q = 0 = (Az)^T (y - p)
+
+0 = (z^T A^T)(y - Ax)
+  = z^T (A^T y - A^T A x)
+  = A^T Ax
+  = A^T y
+
+
+A^T A = [[n+1      \Sigma_{n=0}^n x_n]
+        [\Sigma_{n=0}^n x_n  \Sigma_{n=0}^n x_n^2]]
+  
+A^T y = [[\Sigma_{n=0}^n y_n]
+       [\Sigma_{n=0}^n x_n y_n]]
+
+a_11 = n+1
+a_12 = \Sigma_{n=0}^n x_n
+a_21 = a_12
+a_22 = \Sigma_{n=0}^n x_n^2
+b_1 = \Sigma_{n=0}^n y_n
+b_2 = \Sigma_{n=0}^n x_n y_n
+
+then apply this with:
+
+log(e(h)) \leq log(C) + rlog(h)
+ 
+* homework 3:
+
+two columns \Rightarrow coefficients for linear regression

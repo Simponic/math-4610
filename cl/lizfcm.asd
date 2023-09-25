@@ -11,7 +11,13 @@
                                                  (:file "package")))
                                        (:module "approx"
                                                 :components
-                                                ((:file "derivative" :depends-on ("package"))
+                                                ((:file "maceps" :depends-on ("package"))
+                                                 (:file "derivative" :depends-on ("package"))
+                                                 (:file "package")))
+                                       (:module "vector"
+                                                :components
+                                                ((:file "distance" :depends-on ("norm" "package"))
+                                                 (:file "norm" :depends-on ("package"))
                                                  (:file "package")))))))
 
 
@@ -23,7 +29,9 @@
                 :components ((:module "tests"
                                       :components
                                       ((:file "table" :depends-on ("suite"))
+                                       (:file "maceps" :depends-on ("suite"))
                                        (:file "approx" :depends-on ("suite"))
+                                       (:file "vector" :depends-on ("suite"))
                                        (:file "suite"))))
                 :perform (asdf:test-op (o c) (uiop:symbol-call
                                                :fiveam :run!

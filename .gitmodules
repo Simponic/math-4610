@@ -1,0 +1,3 @@
+[submodule "math4610"]
+	path = class
+	url = https://github.com/jvkoebbe/math4610

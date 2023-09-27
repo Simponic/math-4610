@@ -9,7 +9,7 @@
 Computing $\epsilon_{\text{mac}}$ for single precision numbers
 
 #+BEGIN_SRC lisp :session t :results table 
-  (load "../cl/lizfcm.asd")
+  (load "../lizfcm.asd")
   (ql:quickload :lizfcm)
 
   (let ((domain-values (lizfcm.approx:compute-maceps (lambda (x) x)

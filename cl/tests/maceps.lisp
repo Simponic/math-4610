@@ -13,10 +13,12 @@
 
 (test maceps
       :description "double precision provides precision about (mac eps of single precision) squared"
-      (let* ((maceps-computation-double (compute-maceps 1.0d0
-                                                        (lambda (x) x)))
-             (maceps-computation-single (compute-maceps 1.0
-                                                        (lambda (x) x)))
+      (let* ((maceps-computation-double (compute-maceps (lambda (x) x)
+                                                        1.0d0
+                                                        1.0d0))
+             (maceps-computation-single (compute-maceps (lambda (x) x)
+                                                        1.0
+                                                        1.0))
              (last-double-h (cadar (last maceps-computation-double)))
              (last-single-h (cadar (last maceps-computation-single))))
         (is (within-range-p

@@ -8,4 +8,5 @@
           (setf h (/ h 2)
                 err (abs (- (funcall f (+ a h))
                             (funcall f a))))
+          when (> err 0)
           collect (list a h err))))

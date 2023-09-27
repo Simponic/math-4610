@@ -3,8 +3,7 @@
 (defun p-norm (p)
   (lambda (v)
     (expt
-      (reduce (lambda (acc x)
-                (+ acc x))
+      (reduce #'+
               (mapcar (lambda (x)
                         (abs
                           (expt x p)))
@@ -12,6 +11,4 @@
       (/ 1 p))))
 
 (defun max-norm (v)
-  (reduce (lambda (acc x)
-            (max acc x))
-          v))
+  (reduce #'max v))

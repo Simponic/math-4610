@@ -1,0 +1,88 @@
+% Created 2023-09-29 Fri 10:00
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Elizabeth Hunt}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Elizabeth Hunt},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Taylor Series Approx.}
+\label{sec:orgcc72ed1}
+Suppose f has \(\infty\) many derivatives near a point a. Then the taylor series is given by
+
+\(f(x) = \Sigma_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}(x-a)^n\)
+
+For increment notation we can write
+
+\(f(a + h) = f(a) + f'(a)(a+h - a) + \dots\)
+
+\(= \Sigma_{n=0}^{\infty} \frac{f^{(n)}(a)}{h!} (h^n)\)
+
+Consider the approximation
+
+\(e = |f'(a) - \frac{f(a + h) - f(a)}{h}| = |f'(a) - \frac{1}{h}(f(a + h) - f(a))|\)
+
+Substituting\ldots{}
+
+\(= |f'(a) - \frac{1}{h}((f(a) + f'(a) h + \frac{f''(a)}{2} h^2 + \cdots) - f(a))|\)
+
+\(f(a) - f(a) = 0\)\ldots{} and \(distribute the h\)
+
+\(= |-1/2 f''(a) h + \frac{1}{6}f'''(a)h^2 \cdots|\)
+
+\subsection{With Remainder}
+\label{sec:org7dfd6c7}
+We can determine for some u \(f(a + h) = f(a) + f'(a)h + \frac{1}{2}f''(u)h^2\)
+
+and so the error is \(e = |f'(a) - \frac{f(a + h) - f(a)}{h}| = |\frac{h}{2}f''(u)|\)
+
+\begin{itemize}
+\item\relax [\url{https://openstax.org/books/calculus-volume-2/pages/6-3-taylor-and-maclaurin-series}]
+\begin{itemize}
+\item > Taylor's Theorem w/ Remainder
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Of Deriviatives}
+\label{sec:org1ec7c9b}
+
+Again, \(f'(a) \approx \frac{f(a+h) - f(a)}{h}\),
+
+\(e = |\frac{1}{2} f''(a) + \frac{1}{3!}h^2 f'''(a) + \cdots\)
+
+\(R_2 = \frac{h}{2} f''(u)\)
+
+\(|\frac{h}{2} f''(u)| \leq M h^1\)
+
+\(M = \frac{1}{2}|f'(u)|\)
+
+\subsubsection{Another approximation}
+\label{sec:org16193b9}
+
+\(\text{err} = |f'(a) - \frac{f(a) - f(a - h)}{h}|\)
+
+\(= f'(a) - \frac{1}{h}(f(a) - (f(a) + f'(a)(a - (a - h)) + \frac{1}{2}f''(a)(a-(a-h))^2 + \cdots))\)
+
+\(= |f'(a) - \frac{1}{h}(f'(a) + \frac{1}{2}f''(a)h)|\)
+\end{document}

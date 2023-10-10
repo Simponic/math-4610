@@ -1,0 +1,244 @@
+#+TITLE: HW 03
+#+AUTHOR: Elizabeth Hunt
+#+STARTUP: entitiespretty fold inlineimages
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
+
+* Question One
+** Three Terms
+\begin{align*}
+Si_3(x) &= \int_0^x \frac{s - \frac{s^3}{3!} + \frac{s^5}{5!}}{s} dx \\
+&= x - \frac{x^3}{(3!)(3)} + \frac{x^5}{(5!)(5)}
+\end{align*}
+** Five Terms
+\begin{align*}
+Si_3(x) &= \int_0^x \frac{s - \frac{s^3}{3!} + \frac{s^5}{5!} - \frac{s^7}{7!} + \frac{s^9}{9!}}{s} dx \\
+&= x - \frac{x^3}{(3!)(3)} + \frac{x^5}{(5!)(5)} - \frac{x^7}{(7!)(7)} + \frac{s^9}{(9!)(9)}
+\end{align*}
+** Ten Terms
+\begin{align*}
+Si_{10}(x) &= \int_0^x \frac{s - \frac{s^3}{3!} + \frac{s^5}{5!} - \frac{s^7}{7!} + \frac{s^9}{9!} - \frac{s^{11}}{11!} + \frac{s^{13}}{13!} - \frac{s^{15}}{15!} + \frac{s^{17}}{17!} - \frac{s^{19}}{19!}}{s} ds \\
+&= x - \frac{x^3}{(3!)(3)} + \frac{x^5}{(5!)(5)} - \frac{x^7}{(7!)(7)} + \frac{s^9}{(9!)(9)} - \frac{s^{11}}{(11!)(11)} + \frac{s^{13}}{(13!)(13)} - \frac{s^{15}}{(15!)(15)} \\
+&+ \frac{s^{17}}{(17!)(17)} - \frac{s^{19}}{(19!)(19)}
+\end{align*}
+* Question Three
+For the second term in the difference quotient, we can expand the taylor series centered at x=a:
+
+\begin{equation*}
+f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2}(x-a)^2 + \cdots \\
+\end{equation*}
+
+Which we substitute into the difference quotient:
+
+\begin{equation*}
+\frac{f(a) - f(a - h)}{h} = \frac{f(a) - (f(a) + f'(a)(x-a) + \frac{f''(a)}{2}(x-a)^2 + \cdots)}{h}
+\end{equation*}
+
+And subs. $x=a-h$:
+
+\begin{align*}
+\frac{f(a) - (f(a) + f'(a)(x-a) + \frac{f''(a)}{2}(x-a)^2 + \cdots)}{h} &= -f'(a)(-1) + -\frac{1}{2}f''(a)h \\
+&= f'(a) - \frac{1}{2}f''(a)h + \cdots \\
+\end{align*}
+
+Which we now plug into the initial $e_{\text{abs}}$:
+
+\begin{align*}
+e_{\text{abs}} &= |f'(a) - \frac{f(a) - f(a - h)}{h}| \\
+&= |f'(a) - (f'(a) +  -\frac{f''(a)}{2}h + \cdots)| \\
+&= |- \frac{1}{2}f''(a)h + \cdots | \\
+\end{align*}
+
+With the Taylor Remainder theorem we can absorb the series following the second term:
+
+\begin{equation*}
+e_{\text{abs}} = |- \frac{1}{2}f''(a)h + \cdots | = |\frac{1}{2}f''(\xi)h| \leq Ch
+\end{equation*}
+
+Thus our error is bounded linearly with $h$.
+
+* Question Four
+For the first term in the difference quotient we know, from the given notes,
+
+\begin{equation*}
+f(a+h) = f(a) + f'(a)h + \frac{1}{2}f''(a)h^2 + \frac{1}{6}f'''(a)(h^3)
+\end{equation*}
+
+And from some of the work in Question Three,
+
+\begin{equation*}
+f(a - h) = f(a) + f'(a)(-h) + \frac{1}{2}f''(a)(-h)^2 + \frac{1}{6}f'''(a)(-h^3)
+\end{equation*}
+
+We can substitute immediately into $e_{\text{abs}} = |f'(a) - (\frac{f(a+h) - f(a-h)}{2h})|$:
+
+\begin{align*}
+e_{\text{abs}} &= |f'(a) - \frac{1}{2h}((f(a) + f'(a)h + \frac{1}{2}f''(a)h^2 + \cdots) - (f(a) - f'(a)h + \frac{1}{2}f''(a)h^2 + \cdots))| \\
+&= |f'(a) - \frac{1}{2h}(2f'(a)h + \frac{1}{6}f'''(a)h^3 + \cdots)| \\
+&= |f'(a) - f'(a) - \frac{1}{12}f'''(a)h^2 + \cdots| \\
+&= |-\frac{1}{12}f'''(a)h^2 + \cdots|
+\end{align*}
+
+Finally, with the Taylor Remainder theorem we can absorb the series following the third term:
+
+\begin{equation*}
+e_{\text{abs}} = |-\frac{1}{12}f'''(\xi)h^2| = |\frac{1}{12}f'''(\xi)h^2| \leq Ch^2
+\end{equation*}
+
+Meaning that as $h$ scales linearly, our error is bounded by $h^2$ as opposed to linearly as in Question Three.
+
+* Question Six
+** A
+#+BEGIN_SRC lisp
+  (load "../lizfcm.asd")
+  (ql:quickload :lizfcm)
+
+  (defun f (x)
+    (/ (- x 1) (+ x 1)))
+
+  (defun fprime (x)
+    (/ 2 (expt (+ x 1) 2)))
+
+  (let ((domain-values (loop for a from 0 to 2
+                             append 
+                             (loop for i from 0 to 9
+                                   for h = (/ 1.0 (expt 2 i))
+                                   collect (list a h)))))
+    (lizfcm.utils:table (:headers '("a" "h" "f'" "\\approx f'" "e_{\\text{abs}}")
+                         :domain-order (a h)
+                         :domain-values domain-values)
+      (fprime a)
+      (lizfcm.approx:fwd-derivative-at 'f a h)
+      (abs (- (fprime a)
+              (lizfcm.approx:fwd-derivative-at 'f a h)))))
+#+END_SRC
+
+#+RESULTS:
+| a |           h | f'  |       \approx f' |   e_{\text{abs}} |
+| 0 |         1.0 | 2   |        1.0 |           1.0 |
+| 0 |         0.5 | 2   |  1.3333333 |    0.66666675 |
+| 0 |        0.25 | 2   |  1.5999999 |     0.4000001 |
+| 0 |       0.125 | 2   |  1.7777777 |    0.22222233 |
+| 0 |      0.0625 | 2   |  1.8823528 |    0.11764717 |
+| 0 |     0.03125 | 2   |   1.939394 |   0.060606003 |
+| 0 |    0.015625 | 2   |  1.9692307 |   0.030769348 |
+| 0 |   0.0078125 | 2   |  1.9844971 |    0.01550293 |
+| 0 |  0.00390625 | 2   |   1.992218 |  0.0077819824 |
+| 0 | 0.001953125 | 2   |  1.9960938 |    0.00390625 |
+| 1 |         1.0 | 1/2 | 0.33333334 |    0.16666666 |
+| 1 |         0.5 | 1/2 |        0.4 |   0.099999994 |
+| 1 |        0.25 | 1/2 | 0.44444445 |   0.055555552 |
+| 1 |       0.125 | 1/2 | 0.47058824 |   0.029411763 |
+| 1 |      0.0625 | 1/2 |  0.4848485 |   0.015151501 |
+| 1 |     0.03125 | 1/2 |  0.4923077 |  0.0076923072 |
+| 1 |    0.015625 | 1/2 | 0.49612403 |  0.0038759708 |
+| 1 |   0.0078125 | 1/2 | 0.49805447 |  0.0019455254 |
+| 1 |  0.00390625 | 1/2 | 0.49902534 | 0.00097465515 |
+| 1 | 0.001953125 | 1/2 |  0.4995122 |  0.0004878044 |
+| 2 |         1.0 | 2/9 | 0.16666666 |   0.055555567 |
+| 2 |         0.5 | 2/9 | 0.19047618 |   0.031746045 |
+| 2 |        0.25 | 2/9 |  0.2051282 |   0.017094031 |
+| 2 |       0.125 | 2/9 | 0.21333337 |   0.008888856 |
+| 2 |      0.0625 | 2/9 | 0.21768713 |   0.004535094 |
+| 2 |     0.03125 | 2/9 | 0.21993065 |   0.002291575 |
+| 2 |    0.015625 | 2/9 | 0.22106934 |  0.0011528879 |
+| 2 |   0.0078125 | 2/9 | 0.22164536 | 0.00057686865 |
+| 2 |  0.00390625 | 2/9 | 0.22193146 | 0.00029076636 |
+| 2 | 0.001953125 | 2/9 | 0.22207642 | 0.00014580786 |
+
+
+* Question Nine
+** C
+
+#+BEGIN_SRC lisp
+  (load "../lizfcm.asd")
+  (ql:quickload :lizfcm)
+
+  (defun factorial (n)
+    (if (= n 0)
+        1
+        (* n (factorial (- n 1)))))
+
+  (defun taylor-term (n x)
+    (/ (* (expt (- 1) n)
+          (expt x (+ (* 2 n) 1)))
+       (* (factorial n)
+          (+ (* 2 n) 1))))
+
+  (defun f (x &optional (max-iterations 30))
+    (let ((sum 0.0))
+      (dotimes (n max-iterations)
+        (setq sum (+ sum (taylor-term n x))))
+      (* sum (/ 2 (sqrt pi)))))
+
+  (defun fprime (x)
+    (* (/ 2 (sqrt pi)) (exp (- 0 (* x x)))))
+
+  (let ((domain-values (loop for a from 0 to 1
+                             append 
+                             (loop for i from 0 to 9
+                                   for h = (/ 1.0 (expt 2 i))
+                                   collect (list a h)))))
+    (lizfcm.utils:table (:headers '("a" "h" "f'" "\\approx f'" "e_{\\text{abs}}")
+                         :domain-order (a h)
+                         :domain-values domain-values)
+      (fprime a)
+      (lizfcm.approx:central-derivative-at 'f a h)
+      (abs (- (fprime a)
+              (lizfcm.approx:central-derivative-at 'f a h)))))
+#+END_SRC
+
+
+| a |           h |                    f' |                  \approx f' |             e_{\text{abs}} |
+| 0 |         1.0 |  1.1283791670955126d0 |  0.8427006725464232d0 |   0.28567849454908933d0 |
+| 0 |         0.5 |  1.1283791670955126d0 |  1.0409997446922075d0 |    0.0873794224033051d0 |
+| 0 |        0.25 |  1.1283791670955126d0 |  1.1053055663206806d0 |  0.023073600774832004d0 |
+| 0 |       0.125 |  1.1283791670955126d0 |   1.122529655394656d0 |  0.005849511700856569d0 |
+| 0 |      0.0625 |  1.1283791670955126d0 |  1.1269116944798618d0 | 0.0014674726156507223d0 |
+| 0 |     0.03125 |  1.1283791670955126d0 |  1.1280120131008824d0 |   3.6715399463016496d-4 |
+| 0 |    0.015625 |  1.1283791670955126d0 |  1.1282873617826952d0 |    9.180531281738347d-5 |
+| 0 |   0.0078125 |  1.1283791670955126d0 |   1.128356232581468d0 |    2.293451404455915d-5 |
+| 0 |  0.00390625 |  1.1283791670955126d0 |  1.1283734502811613d0 |     5.71681435124205d-6 |
+| 0 | 0.001953125 |  1.1283791670955126d0 |  1.1283777547060847d0 |   1.4123894278572635d-6 |
+| 1 |         1.0 | 0.41510750774498784d0 |  0.4976611317561498d0 |   0.08255362401116195d0 |
+| 1 |         0.5 | 0.41510750774498784d0 | 0.44560523266293384d0 |     0.030497724917946d0 |
+| 1 |        0.25 | 0.41510750774498784d0 |  0.4234889628937013d0 |  0.008381455148713468d0 |
+| 1 |       0.125 | 0.41510750774498784d0 | 0.41725265825950153d0 |  0.002145150514513694d0 |
+| 1 |      0.0625 | 0.41510750774498784d0 | 0.41564710776310854d0 |    5.396000181207006d-4 |
+| 1 |     0.03125 | 0.41510750774498784d0 |  0.4152414157140871d0 |   1.3390796909928948d-4 |
+| 1 |    0.015625 | 0.41510750774498784d0 | 0.41514241394084905d0 |    3.490619586121735d-5 |
+| 1 |   0.0078125 | 0.41510750774498784d0 | 0.41510582632900395d0 |   1.6814159838896003d-6 |
+| 1 |  0.00390625 | 0.41510750774498784d0 |   0.415092913054238d0 |   1.4594690749825112d-5 |
+| 1 | 0.001953125 | 0.41510750774498784d0 |  0.4150670865046777d0 |   4.0421240310117845d-5 |
+
+
+* Question Twelve
+
+First we'll place a bound on $h$; looking at a graph of $f$ it's pretty obvious from the asymptotes that we don't want to go much further than $|h| = 2 - \frac{pi}{2}$.
+
+Following similar reasoning as Question Four, we can determine an optimal $h$ by computing $e_{\text{abs}}$ for the central difference, but now including a roundoff error for each time we run $f$
+such that $|f_{\text{machine}}(x) - f(x)| \le \epsilon_{\text{dblprec}}$ (we'll use double precision numbers, from HW 2 we know $\epsilon_{\text{dblprec}} \approx 2.22045 (10^{-16})$).
+
+We'll just assume $|f_{\text{machine}}(x) - f(x)| = \epsilon_{\text{dblprec}}$ so our new difference quotient becomes:
+
+\begin{align*}
+e_{\text{abs}} &= |f'(a) - (\frac{f(a+h) - f(a-h) + 2\epsilon_{\text{dblprec}}}{2h})| \\
+&= |\frac{1}{12}f'''(\xi)h^2 + \frac{\epsilon_{\text{dblprec}}}{h}|
+\end{align*}
+
+Because we bounded our $|h| = 2 - \frac{pi}{2}$ we'll find the maximum value of $f'''$ between $a - (2 - \frac{\pi}{2})$ and $a - (2 - \frac{\pi}{3})$. Using [[https://www.desmos.com/calculator/gen1zpohh2][desmos]] I found this to be -2.
+
+Thus, $e_{\text{abs}} \leq \frac{1}{6}h^2 + \frac{\epsilon_{\text{dblprec}}}{h}$. Finding the derivative:
+
+\begin{equation*}
+e' = \frac{1}{3}h - \frac{\epsilon_{\text{dblprec}}}{h^2}
+\end{equation*}
+
+And solving at $e' = 0$:
+
+\begin{equation*}
+\frac{1}{3}h = \frac{\epsilon_{\text{dblprec}}}{h^2} \Rightarrow h^3 = 3\epsilon_{\text{dblprec}} \Rightarrow h = (3\epsilon_{\text{dblprec}})^{1/3}
+\end{equation*}
+
+Which is $\approx (3(2.22045 (10^{-16}))^{\frac{1}{3}} \approx 8.7335 10^{-6}$.

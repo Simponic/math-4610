@@ -3,10 +3,10 @@
 (defun compute-maceps (f a init)
   (let ((h init)
         (err init))
-    (loop while (> err 0)
+    (loop collect (list a h err)
           do
           (setf h (/ h 2)
                 err (abs (- (funcall f (+ a h))
                             (funcall f a))))
-          when (> err 0)
-          collect (list a h err))))
+          while (> err 0))))
+

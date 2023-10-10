@@ -11,7 +11,7 @@
            :in lizfcm-test-suite)
 (in-suite approx-suite)
 
-(test derivative-at
+(test central-derivative-at
       :description "derivative at is within bounds"
       (let ((f (lambda (x) (* x x)))
             (x 2)
@@ -19,6 +19,18 @@
             (f-prime-at-x 4)
             (delta 0.01))
         (is (within-range-p
-              (derivative-at f x delta)
+              (central-derivative-at f x delta)
+              f-prime-at-x
+              accepted-delta))))
+
+(test fwd-derivative-at
+      :description "forward derivative at is within bounds"
+      (let ((f (lambda (x) (* x x)))
+            (x 2)
+            (accepted-delta 0.02)
+            (f-prime-at-x 4)
+            (delta 0.01))
+        (is (within-range-p
+              (forward-derivative-at f x delta)
               f-prime-at-x
               accepted-delta))))

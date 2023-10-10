@@ -2,5 +2,6 @@
 (defpackage lizfcm.approx
   (:use :cl)
   (:export :central-derivative-at
-           :fwd-derivative-at
+           :forward-derivative-at
+           :backward-derivative-at
            :compute-maceps))

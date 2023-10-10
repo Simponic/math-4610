@@ -29,3 +29,14 @@
                             dist
                             0.00001))))
 
+(test least-squares
+      :description "least squares is correct enough"
+      (let ((x '(0 1 2 3 4))
+            (y '(1 2 3 4 5)))
+        (destructuring-bind (m b) (lizfcm.vector:least-squares-reg x y)
+          (is (within-range-p m 1 0.00001))
+          (is (within-range-p b 1 0.00001))))
+      (let ((x '(1 2 3 4 5 6 7))
+            (y '(0.5 3 2 3.5 5 6 7.5)))
+        (destructuring-bind (m b) (lizfcm.vector:least-squares-reg x y)
+          (is (within-range-p m 1 0.3))))) ;; just a guestimate for best fit

@@ -4,4 +4,5 @@
   (:export
     :p-norm
     :max-norm
-    :distance))
+    :distance
+    :least-squares-reg))

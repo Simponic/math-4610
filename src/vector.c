@@ -41,12 +41,19 @@ double sum_v(Array_double *v) {
   return sum;
 }
 
+Array_double *scale_v(Array_double *v, double m) {
+  Array_double *copy = copy_vector(v);
+  for (size_t i = 0; i < v->size; i++)
+    copy->data[i] *= m;
+  return copy;
+}
+
 Array_double *add_v(Array_double *v1, Array_double *v2) {
   assert(v1->size == v2->size);
 
-  Array_double *sum = InitArrayWithSize(double, v1->size, 0);
+  Array_double *sum = copy_vector(v1);
   for (size_t i = 0; i < v1->size; i++)
-    sum->data[i] = v1->data[i] + v2->data[i];
+    sum->data[i] += v2->data[i];
   return sum;
 }
 
@@ -78,6 +85,18 @@ double linf_distance(Array_double *v1, Array_double *v2) {
   double dist = linf_norm(minus);
   free(minus);
   return dist;
+}
+
+Array_double *copy_vector(Array_double *v) {
+  Array_double *copy = InitArrayWithSize(double, v->size, 0.0);
+  for (size_t i = 0; i < copy->size; ++i)
+    copy->data[i] = v->data[i];
+  return copy;
+}
+
+void free_vector(Array_double *v) {
+  free(v->data);
+  free(v);
 }
 
 void format_vector_into(Array_double *v, char *s) {

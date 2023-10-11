@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <float.h>
 #include <math.h>
+#include <string.h>
 #include <stdio.h>
 
 double l2_norm(Array_double *v) {
@@ -100,10 +101,17 @@ void free_vector(Array_double *v) {
 }
 
 void format_vector_into(Array_double *v, char *s) {
-  sprintf(s, "");
-  if (v->size == 0)
-    sprintf(s, "empty");
+  if (v->size == 0) {
+    strcat(s, "empty");
+    return;
+  }
 
-  for (size_t i = 0; i < v->size; ++i)
-    sprintf(s, "%s %f,", s, v->data[i]);
+  for (size_t i = 0; i < v->size; ++i) {
+    char num[64];
+    strcpy(num, "");
+
+    sprintf(num, "%f,", v->data[i]);
+    strcat(s, num);
+  }
+  strcat(s, "\n");
 }

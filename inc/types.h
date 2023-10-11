@@ -1,5 +1,5 @@
 #include "macros.h"
-#include <stddef.h>
+#include <stdint.h>
 
 #ifndef TYPES_H
 #define TYPES_H

@@ -5,29 +5,25 @@ BIN_DIR := dist
 LIB_DIR := lib
 
 TEST_EXE := $(BIN_DIR)/lizfcm.test
-EXE := $(BIN_DIR)/lizfcm
-LIBRARY := $(LIB_DIR)/lizfcm.a
-SRC := $(wildcard $(SRC_DIR)/*.c)
-OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+EXE      := $(BIN_DIR)/lizfcm
+LIBRARY  := $(LIB_DIR)/lizfcm.a
+SRC      := $(wildcard $(SRC_DIR)/*.c)
+OBJ      := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CPPFLAGS := -Iinc -MMD -MP
 CFLAGS   := -Wall
-LDFLAGS  := 
-LDLIBS   := -lm
+LDFLAGS  := -lm
 
 .PHONY: all clean
 
 all: $(TEST_EXE)
 
-$(TEST_EXE): $(LIBRARY)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LIBRARY) $(TEST_SRC) -o $@
+$(TEST_EXE): $(BIN_DIR) | $(LIBRARY)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(TEST_SRC) $(LIBRARY) -o $@
 
-$(LIBRARY): $(EXE)
+$(LIBRARY): $(OBJ)
 	ar rcs $(LIBRARY) $(OBJ_DIR)/*.o
 	ranlib $(LIBRARY)
-
-$(EXE): $(OBJ) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@

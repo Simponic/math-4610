@@ -25,6 +25,9 @@ extern double linf_distance(Array_double *v1, Array_double *v2);
 
 extern void format_vector_into(Array_double *v, char *s);
 
+extern void format_matrix_into(Matrix_double *m, char *s);
+extern void put_identity_diagonal(Matrix_double *m);
+
 extern Line *least_squares_lin_reg(Array_double *x, Array_double *y);
 
 #endif // LIZFCM_H

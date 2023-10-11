@@ -1,0 +1,10 @@
+* My Basic Routines
+* Linear Solution Routines
+** Gaussian Elimination with Backwards Substitution
+** LU factorization
+* Matrix Routines
+** dotproduct
+** crossproduct
+** matrixvector
+** matrixmatrix
+

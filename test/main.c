@@ -50,5 +50,11 @@ int main() {
   line = least_squares_lin_reg(v, w);
   printf("least_squares_lin_reg(v, w): (%f)x + %f\n", line->m, line->a);
 
+  char m_s[256];
+  Matrix_double *m = InitMatrixWithSize(double, 8, 8, 0.0);
+  put_identity_diagonal(m);
+  format_matrix_into(m, m_s);
+  printf("%s", m_s);
+
   return 0;
 }

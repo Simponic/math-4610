@@ -1,0 +1,15 @@
+* Diagonal Dominance
+Suppose that A \in R^{n \times n} is diagonally dominant then Gaussian eliminiation of A produces no zero pivot
+elements.
+
+Def. A \in R^{n \times n} is diagonally dominant if for each i=1,2,...n |a_{i,i}| \geq \Sigma_{j=1}^n |a_i,j|
+
+
+* To test solution code:
+         [[1]
+          [1]
+Set y =   [\cdots]    \in R^n
+          [1]]
+
+Compute b=Ay
+Solve Ax=b

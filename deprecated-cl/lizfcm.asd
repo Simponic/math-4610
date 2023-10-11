@@ -9,7 +9,7 @@
                  (:file "approx,maceps" :depends-on ("approx,package"))
                  (:file "approx,derivative" :depends-on ("approx,package"))
                  (:file "approx,package")
-                 (:file "vector,least-squares")
+                 (:file "vector,least-squares" :depends-on ("vector,package"))
                  (:file "vector,distance" :depends-on ("vector,norm" "vector,package"))
                  (:file "vector,norm" :depends-on ("vector,package"))
                  (:file "vector,package")))

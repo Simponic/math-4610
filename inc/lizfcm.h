@@ -30,7 +30,9 @@ extern Line *least_squares_lin_reg(Array_double *x, Array_double *y);
 extern void put_identity_diagonal(Matrix_double *m);
 extern Matrix_double *copy_matrix(Matrix_double *m);
 extern void free_matrix(Matrix_double *m);
-extern Matrix_double **put_lu_decomp(Matrix_double *m);
+extern Matrix_double **lu_decomp(Matrix_double *m);
+extern Array_double *bsubst(Matrix_double *u, Array_double *b);
+extern Array_double *fsubst(Matrix_double *l, Array_double *b);
 
 extern void format_matrix_into(Matrix_double *m, char *s);
 

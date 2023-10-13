@@ -10,19 +10,18 @@ int main() {
   printf("dmaceps(): %.10e\n", dmaceps());
   printf("========\n");
 
+  printf("Norm, Distance\n");
   Array_double *v = InitArray(double, {3, 1, -4, 1, 5, -9, 3});
-  char v_s[256];
-  strcpy(v_s, "");
-  format_vector_into(v, v_s);
+  char s[2048];
+  strcpy(s, "");
+  format_vector_into(v, s);
+  printf("v: %s", s);
 
   Array_double *w = InitArray(double, {-2, 7, 1, -8, -2, 8, 5});
-  char w_s[256];
-  strcpy(w_s, "");
-  format_vector_into(w, w_s);
+  strcpy(s, "");
+  format_vector_into(w, s);
+  printf("w: %s", s);
 
-  printf("Norm, Distance\n");
-  printf("v: %s", v_s);
-  printf("w: %s", w_s);
   printf("l1_norm(v): %f\n", l1_norm(v));
   printf("l2_norm(v): %f\n", l2_norm(v));
   printf("linf_norm(v): %f\n", linf_norm(v));
@@ -38,52 +37,79 @@ int main() {
   printf("approx f'(1) w/ fw.d.: %f\n", forward_derivative_at(&f, 1, h));
   printf("approx f'(1) w/ bw.d.: %f\n", backward_derivative_at(&f, 1, h));
   printf("========\n");
+  printf("Least Squares\n");
 
   v = InitArray(double, {1, 2, 3, 4, 5});
-  strcpy(v_s, "");
-  format_vector_into(v, v_s);
+  strcpy(s, "");
+  format_vector_into(v, s);
+  printf("v: %s", s);
   w = InitArray(double, {2, 3, 4, 5, 6});
-  strcpy(w_s, "");
-  format_vector_into(w, w_s);
+  strcpy(s, "");
+  format_vector_into(w, s);
+  printf("w: %s", s);
+
   Line *line = least_squares_lin_reg(v, w);
-  printf("Least Squares\n");
-  printf("v: %s", v_s);
-  printf("w: %s", w_s);
+
   printf("least_squares_lin_reg(v, w): (%f)x + %f\n", line->m, line->a);
   v = InitArray(double, {1, 2, 3, 4, 5, 6, 7});
-  strcpy(v_s, "");
-  format_vector_into(v, v_s);
+  strcpy(s, "");
+  format_vector_into(v, s);
+  printf("v: %s", s);
   w = InitArray(double, {0.5, 3, 2, 3.5, 5, 6, 7.5});
-  strcpy(w_s, "");
-  format_vector_into(w, w_s);
-  printf("v: %s", v_s);
-  printf("w: %s", w_s);
+  strcpy(s, "");
+  format_vector_into(w, s);
+  printf("w: %s", s);
+
   line = least_squares_lin_reg(v, w);
   printf("least_squares_lin_reg(v, w): (%f)x + %f\n", line->m, line->a);
   printf("========\n");
 
   printf("LU Decomp\n");
-  char m_s[2048];
-  Matrix_double *m = InitMatrixWithSize(double, 8, 8, 0.0);
-  for (int i = 0; i < 8; i++) {
-    for (int j = 0; j < 8; j++)
-      m->data[i]->data[j] = (i + 1.0) + j * 3 + (rand() % 12);
+  Matrix_double *m = InitMatrixWithSize(double, 10, 10, 0.0);
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++)
+      m->data[i]->data[j] = (100 - rand() % 200);
   }
-  format_matrix_into(m, m_s);
-  printf("m = %s", m_s);
+  strcpy(s, "");
+  format_matrix_into(m, s);
+  printf("m = %s", s);
 
-  Matrix_double **u_l = put_lu_decomp(m);
+  Array_double *b = InitArrayWithSize(double, 10, 100.0);
+  Matrix_double **u_l = lu_decomp(m);
   Matrix_double *u = u_l[0];
   Matrix_double *l = u_l[1];
 
-  strcpy(m_s, "");
-  format_matrix_into(u, m_s);
-  printf("u = %s", m_s);
-  strcpy(m_s, "");
-  format_matrix_into(l, m_s);
-  printf("l = %s", m_s);
+  strcpy(s, "");
+  format_matrix_into(u, s);
+  printf("u = %s", s);
+  strcpy(s, "");
+  format_matrix_into(l, s);
+  printf("l = %s", s);
+  strcpy(s, "");
+  format_vector_into(b, s);
+  printf("b = %s", s);
   printf("========\n");
-  printf("Back Substitution\n");
+  printf("Backward -> Forward Substitution\n");
+
+  Array_double *b_fsub = fsubst(l, b);
+  strcpy(s, "");
+  format_vector_into(b_fsub, s);
+  printf("x: %s\n", s);
+
+  Array_double *x_bsub = bsubst(u, b_fsub);
+  strcpy(s, "");
+  format_vector_into(x_bsub, s);
+  printf("x: %s", s);
+
+  free_vector(b_fsub);
+
+  printf("Verifications (each should be approximately 100)\n");
+  for (size_t row = 0; row < m->rows; row++) {
+    double curr = 0;
+    for (size_t col = 0; col < m->cols; col++)
+      curr += m->data[row]->data[col] * x_bsub->data[col];
+    printf("Substitution for row %zu = %f\n", row, curr);
+  }
 
   return 0;
 }

@@ -1,0 +1,8 @@
+* Root Finding
+Finx x \in R such that f(x) = 0
+
+If g(x) is a function and we want to find x such that g(x) is
+extremal then we find x \in R such that g'(x) = 0
+
+
+Hanging Cable Problem y(x) = c_1 cosh(\frac{x- c_2}{c_2})

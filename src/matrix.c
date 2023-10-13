@@ -1,7 +1,7 @@
 #include "lizfcm.h"
 #include <assert.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 void put_identity_diagonal(Matrix_double *m) {
   assert(m->rows == m->cols);
@@ -19,7 +19,7 @@ Matrix_double *copy_matrix(Matrix_double *m) {
   return copy;
 }
 
-Matrix_double **put_lu_decomp(Matrix_double *m) {
+Matrix_double **lu_decomp(Matrix_double *m) {
   assert(m->cols == m->rows);
 
   Matrix_double *u = copy_matrix(m);
@@ -61,6 +61,32 @@ Matrix_double **put_lu_decomp(Matrix_double *m) {
   u_l[0] = u;
   u_l[1] = l;
   return u_l;
+}
+
+Array_double *bsubst(Matrix_double *u, Array_double *b) {
+  assert(u->rows == b->size && u->cols == u->rows);
+
+  Array_double *x = copy_vector(b);
+  for (int64_t row = b->size - 1; row >= 0; row--) {
+    for (size_t col = b->size - 1; col > row; col--)
+      x->data[row] -= x->data[col] * u->data[row]->data[col];
+    x->data[row] /= u->data[row]->data[row];
+  }
+  return x;
+}
+
+Array_double *fsubst(Matrix_double *l, Array_double *b) {
+  assert(l->rows == b->size && l->cols == l->rows);
+
+  Array_double *x = copy_vector(b);
+
+  for (size_t row = 0; row < b->size; row++) {
+    for (size_t col = 0; col < row; col++)
+      x->data[row] -= x->data[col] * l->data[row]->data[col];
+    x->data[row] /= l->data[row]->data[row];
+  }
+
+  return x;
 }
 
 void free_matrix(Matrix_double *m) {

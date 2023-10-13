@@ -1,10 +1,13 @@
 #include "lizfcm.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 double f(double x) { return (x - 1) / (x + 1); }
 
 int main() {
+  char s[2048];
+
   printf("Basic Routines\n");
   printf("smaceps(): %.10e\n", smaceps());
   printf("dmaceps(): %.10e\n", dmaceps());
@@ -12,7 +15,6 @@ int main() {
 
   printf("Norm, Distance\n");
   Array_double *v = InitArray(double, {3, 1, -4, 1, 5, -9, 3});
-  char s[2048];
   strcpy(s, "");
   format_vector_into(v, s);
   printf("v: %s", s);
@@ -65,17 +67,19 @@ int main() {
   printf("========\n");
 
   printf("LU Decomp\n");
-  Matrix_double *m = InitMatrixWithSize(double, 10, 10, 0.0);
-  for (int i = 0; i < 10; i++) {
-    for (int j = 0; j < 10; j++)
-      m->data[i]->data[j] = (100 - rand() % 200);
+  uint32_t n = 10;
+  Matrix_double *a = InitMatrixWithSize(double, n, n, 0.0);
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++)
+      a->data[i]->data[j] = (100 - rand() % 200);
   }
   strcpy(s, "");
-  format_matrix_into(m, s);
-  printf("m = %s", s);
+  format_matrix_into(a, s);
+  printf("a = %s", s);
 
-  Array_double *b = InitArrayWithSize(double, 10, 100.0);
-  Matrix_double **u_l = lu_decomp(m);
+  uint32_t solution = 100;
+  Array_double *b = InitArrayWithSize(double, n, (double)solution);
+  Matrix_double **u_l = lu_decomp(a);
   Matrix_double *u = u_l[0];
   Matrix_double *l = u_l[1];
 
@@ -89,26 +93,28 @@ int main() {
   format_vector_into(b, s);
   printf("b = %s", s);
   printf("========\n");
-  printf("Backward -> Forward Substitution\n");
+  printf("Forward / Backward Substitution Solution to ax=b\n");
 
   Array_double *b_fsub = fsubst(l, b);
+  free_vector(b);
   strcpy(s, "");
   format_vector_into(b_fsub, s);
-  printf("x: %s\n", s);
+  printf("b_fsub: %s", s);
 
   Array_double *x_bsub = bsubst(u, b_fsub);
   strcpy(s, "");
   format_vector_into(x_bsub, s);
-  printf("x: %s", s);
+  printf("x_bsub: %s", s);
 
   free_vector(b_fsub);
 
-  printf("Verifications (each should be approximately 100)\n");
-  for (size_t row = 0; row < m->rows; row++) {
+  printf("Verifications\n");
+  for (size_t row = 0; row < a->rows; row++) {
     double curr = 0;
-    for (size_t col = 0; col < m->cols; col++)
-      curr += m->data[row]->data[col] * x_bsub->data[col];
-    printf("Substitution for row %zu = %f\n", row, curr);
+    for (size_t col = 0; col < a->cols; col++)
+      curr += a->data[row]->data[col] * x_bsub->data[col];
+    printf("Substituions for values in row %zu = %f, true value err=%.10e\n",
+           row, curr, fabs(curr - solution));
   }
 
   return 0;

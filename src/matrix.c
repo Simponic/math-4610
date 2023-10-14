@@ -35,8 +35,9 @@ Matrix_double **lu_decomp(Matrix_double *m) {
   assert(m->cols == m->rows);
 
   Matrix_double *u = copy_matrix(m);
-  Matrix_double *l = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
-  put_identity_diagonal(l);
+  Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
+  Matrix_double *l = put_identity_diagonal(l_empt);
+  free(l_empt);
 
   Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 

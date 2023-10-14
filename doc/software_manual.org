@@ -373,49 +373,51 @@ void format_vector_into(Array_double *v, char *s) {
   decomposed
 
 #+BEGIN_SRC c
-Matrix_double **lu_decomp(Matrix_double *m) {
-  assert(m->cols == m->rows);
+  Matrix_double **lu_decomp(Matrix_double *m) {
+    assert(m->cols == m->rows);
 
-  Matrix_double *u = copy_matrix(m);
-  Matrix_double *l = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
-  put_identity_diagonal(l);
+    Matrix_double *u = copy_matrix(m);
+    Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
+    Matrix_double *l = put_identity_diagonal(l_empt);
+    free(l_empt);
 
-  Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 
-  for (size_t y = 0; y < m->rows; y++) {
-    if (u->data[y]->data[y] == 0) {
-      printf("ERROR: a pivot is zero in given matrix\n");
-      exit(-1);
-    }
-  }
+    Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 
-  if (u && l) {
-    for (size_t x = 0; x < m->cols; x++) {
-      for (size_t y = x + 1; y < m->rows; y++) {
-        double denom = u->data[x]->data[x];
-
-        if (denom == 0) {
-          printf("ERROR: non-factorable matrix\n");
-          exit(-1);
-        }
-
-        double factor = -(u->data[y]->data[x] / denom);
-
-        Array_double *scaled = scale_v(u->data[x], factor);
-        Array_double *added = add_v(scaled, u->data[y]);
-        free_vector(scaled);
-        free_vector(u->data[y]);
-
-        u->data[y] = added;
-        l->data[y]->data[x] = -factor;
+    for (size_t y = 0; y < m->rows; y++) {
+      if (u->data[y]->data[y] == 0) {
+        printf("ERROR: a pivot is zero in given matrix\n");
+        exit(-1);
       }
     }
-  }
 
-  u_l[0] = u;
-  u_l[1] = l;
-  return u_l;
-}
+    if (u && l) {
+      for (size_t x = 0; x < m->cols; x++) {
+        for (size_t y = x + 1; y < m->rows; y++) {
+          double denom = u->data[x]->data[x];
+
+          if (denom == 0) {
+            printf("ERROR: non-factorable matrix\n");
+            exit(-1);
+          }
+
+          double factor = -(u->data[y]->data[x] / denom);
+
+          Array_double *scaled = scale_v(u->data[x], factor);
+          Array_double *added = add_v(scaled, u->data[y]);
+          free_vector(scaled);
+          free_vector(u->data[y]);
+
+          u->data[y] = added;
+          l->data[y]->data[x] = -factor;
+        }
+      }
+    }
+
+    u_l[0] = u;
+    u_l[1] = l;
+    return u_l;
+  }
 #+END_SRC
 *** ~bsubst~
 + Author: Elizabeth Hunt

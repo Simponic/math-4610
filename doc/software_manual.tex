@@ -1,0 +1,867 @@
+% Created 2023-10-13 Fri 20:48
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+\author{Elizabeth Hunt}
+\date{\today}
+\title{LIZFCM Software Manual (v0.1)}
+\hypersetup{
+ pdfauthor={Elizabeth Hunt},
+ pdftitle={LIZFCM Software Manual (v0.1)},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\setlength\parindent{0pt}
+
+\section{Design}
+\label{sec:org23cc15b}
+The LIZFCM static library is a successor to my attempt at writing codes for the
+Fundamentals of Computational Mathematics course in Common Lisp, but the effort required
+to meet the requirement of creating a static library became too difficult to integrate
+outside of the \texttt{ASDF} solution that Common Lisp already brings to the table.
+
+All of the work established in \texttt{deprecated-cl} has been painstakingly translated into
+the C programming language. I have a couple tenets for its design:
+
+\begin{itemize}
+\item Implemntations of routines should all be done immutably in respect to arguments.
+\item Functional programming is good (it's\ldots{} rough in this language though).
+\end{itemize}
+
+\section{Compilation}
+\label{sec:orgc704fb9}
+A provided \texttt{Makefile} is added for convencience. It has been tested on an M1 machine running MacOS as
+well as Arch Linux.
+
+\begin{enumerate}
+\item \texttt{cd} into the root of the repo
+\item \texttt{make}
+\end{enumerate}
+
+Then, as of homework 4, the testing routine in \texttt{test/main.c} can be run via
+\texttt{./dist/lizfcm.test}.
+
+Execution of the Makefile will perform compilation of individual routines.
+
+But, in the requirement of manual intervention (should the little alien workers
+inside the computer fail to do their job), one can use the following command to
+produce an object file:
+
+\begin{verbatim}
+  gcc -Iinc/ -lm -Wall -c src/<the_routine>.c -o build/<the_routine>.o
+\end{verbatim}
+
+Which is then bundled into a static library in \texttt{lib/lizfcm.a} which can be linked
+in the standard method.
+
+\section{The LIZFCM API}
+\label{sec:org01b31c2}
+\subsection{Simple Routines}
+\label{sec:org5355145}
+\subsubsection{\texttt{smaceps}}
+\label{sec:org4ed063f}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{smaceps}
+\item Location: \texttt{src/maceps.c}
+\item Input: none
+\item Output: a \texttt{float} returning the specific "Machine Epsilon" of a machine on a
+single precision floating point number at which it becomes "indistinguishable".
+\end{itemize}
+
+\begin{verbatim}
+float smaceps() {
+  float one = 1.0;
+  float machine_epsilon = 1.0;
+  float one_approx = one + machine_epsilon;
+
+  while (fabsf(one_approx - one) > 0) {
+    machine_epsilon /= 2;
+    one_approx = one + machine_epsilon;
+  }
+
+  return machine_epsilon;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{dmaceps}}
+\label{sec:orgcd0dfff}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{dmaceps}
+\item Location: \texttt{src/maceps.c}
+\item Input: none
+\item Output: a \texttt{double} returning the specific "Machine Epsilon" of a machine on a
+double precision floating point number at which it becomes "indistinguishable".
+\end{itemize}
+
+\begin{verbatim}
+double dmaceps() {
+  double one = 1.0;
+  double machine_epsilon = 1.0;
+  double one_approx = one + machine_epsilon;
+
+  while (fabs(one_approx - one) > 0) {
+    machine_epsilon /= 2;
+    one_approx = one + machine_epsilon;
+  }
+
+  return machine_epsilon;
+}
+\end{verbatim}
+
+\subsection{Derivative Routines}
+\label{sec:org8f54012}
+\subsubsection{\texttt{central\_derivative\_at}}
+\label{sec:org2c81fc1}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{central\_derivative\_at}
+\item Location: \texttt{src/approx\_derivative.c}
+\item Input:
+\begin{itemize}
+\item \texttt{f} is a pointer to a one-ary function that takes a double as input and produces
+a double as output
+\item \texttt{a} is the domain value at which we approximate \texttt{f'}
+\item \texttt{h} is the step size
+\end{itemize}
+\item Output: a \texttt{double} of the approximate value of \texttt{f'(a)} via the central difference
+method.
+\end{itemize}
+
+\begin{verbatim}
+double central_derivative_at(double (*f)(double), double a, double h) {
+  assert(h > 0);
+
+  double x2 = a + h;
+  double x1 = a - h;
+
+  double y2 = (*f)(x2);
+  double y1 = (*f)(x1);
+
+  return (y2 - y1) / (x2 - x1);
+}
+\end{verbatim}
+
+\subsubsection{\texttt{forward\_derivative\_at}}
+\label{sec:org149b09e}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{forward\_derivative\_at}
+\item Location: \texttt{src/approx\_derivative.c}
+\item Input:
+\begin{itemize}
+\item \texttt{f} is a pointer to a one-ary function that takes a double as input and produces
+a double as output
+\item \texttt{a} is the domain value at which we approximate \texttt{f'}
+\item \texttt{h} is the step size
+\end{itemize}
+\item Output: a \texttt{double} of the approximate value of \texttt{f'(a)} via the forward difference
+method.
+\end{itemize}
+
+\begin{verbatim}
+double forward_derivative_at(double (*f)(double), double a, double h) {
+  assert(h > 0);
+
+  double x2 = a + h;
+  double x1 = a;
+
+  double y2 = (*f)(x2);
+  double y1 = (*f)(x1);
+
+  return (y2 - y1) / (x2 - x1);
+}
+\end{verbatim}
+
+\subsubsection{\texttt{backward\_derivative\_at}}
+\label{sec:orgbaa2238}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{backward\_derivative\_at}
+\item Location: \texttt{src/approx\_derivative.c}
+\item Input:
+\begin{itemize}
+\item \texttt{f} is a pointer to a one-ary function that takes a double as input and produces
+a double as output
+\item \texttt{a} is the domain value at which we approximate \texttt{f'}
+\item \texttt{h} is the step size
+\end{itemize}
+\item Output: a \texttt{double} of the approximate value of \texttt{f'(a)} via the backward difference
+method.
+\end{itemize}
+
+\begin{verbatim}
+double backward_derivative_at(double (*f)(double), double a, double h) {
+  assert(h > 0);
+
+  double x2 = a;
+  double x1 = a - h;
+
+  double y2 = (*f)(x2);
+  double y1 = (*f)(x1);
+
+  return (y2 - y1) / (x2 - x1);
+}
+\end{verbatim}
+
+\subsection{Vector Routines}
+\label{sec:orgf9dd708}
+\subsubsection{Vector Arithmetic: \texttt{add\_v, minus\_v}}
+\label{sec:orgbb91d9d}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name(s): \texttt{add\_v}, \texttt{minus\_v}
+\item Location: \texttt{src/vector.c}
+\item Input: two pointers to locations in memory wherein \texttt{Array\_double}'s lie
+\item Output: a pointer to a new \texttt{Array\_double} as the result of addition or subtraction
+of the two input \texttt{Array\_double}'s
+\end{itemize}
+
+\begin{verbatim}
+Array_double *add_v(Array_double *v1, Array_double *v2) {
+  assert(v1->size == v2->size);
+
+  Array_double *sum = copy_vector(v1);
+  for (size_t i = 0; i < v1->size; i++)
+    sum->data[i] += v2->data[i];
+  return sum;
+}
+
+Array_double *minus_v(Array_double *v1, Array_double *v2) {
+  assert(v1->size == v2->size);
+
+  Array_double *sub = InitArrayWithSize(double, v1->size, 0);
+  for (size_t i = 0; i < v1->size; i++)
+    sub->data[i] = v1->data[i] - v2->data[i];
+  return sub;
+}
+\end{verbatim}
+
+\subsubsection{Norms: \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}}
+\label{sec:org88bb4c5}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name(s): \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to a location in memory wherein an \texttt{Array\_double} lies
+\item Output: a \texttt{double} representing the value of the norm the function applies
+\end{itemize}
+
+\begin{verbatim}
+double l1_norm(Array_double *v) {
+  double sum = 0;
+  for (size_t i = 0; i < v->size; ++i)
+    sum += fabs(v->data[i]);
+  return sum;
+}
+
+double l2_norm(Array_double *v) {
+  double norm = 0;
+  for (size_t i = 0; i < v->size; ++i)
+    norm += v->data[i] * v->data[i];
+  return sqrt(norm);
+}
+
+double linf_norm(Array_double *v) {
+  assert(v->size > 0);
+  double max = v->data[0];
+  for (size_t i = 0; i < v->size; ++i)
+    max = c_max(v->data[i], max);
+  return max;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{vector\_distance}}
+\label{sec:org4499de6}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{vector\_distance}
+\item Location: \texttt{src/vector.c}
+\item Input: two pointers to locations in memory wherein \texttt{Array\_double}'s lie, and a pointer to a
+one-ary function \texttt{norm} taking as input a pointer to an \texttt{Array\_double} and returning a double
+representing the norm of that \texttt{Array\_double}
+\end{itemize}
+
+\begin{verbatim}
+double vector_distance(Array_double *v1, Array_double *v2,
+                       double (*norm)(Array_double *)) {
+  Array_double *minus = minus_v(v1, v2);
+  double dist = (*norm)(minus);
+  free(minus);
+  return dist;
+}
+\end{verbatim}
+
+\subsubsection{Distances: \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}}
+\label{sec:org1e61aea}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name(s): \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}
+\item Location: \texttt{src/vector.c}
+\item Input: two pointers to locations in memory wherein \texttt{Array\_double}'s lie, and the distance
+via the corresponding \texttt{l1}, \texttt{l2}, or \texttt{linf} norms
+\item Output: A \texttt{double} representing the distance between the two \texttt{Array\_doubles}'s by the given
+norm.
+\end{itemize}
+
+\begin{verbatim}
+double l1_distance(Array_double *v1, Array_double *v2) {
+  return vector_distance(v1, v2, &l1_norm);
+}
+
+double l2_distance(Array_double *v1, Array_double *v2) {
+  return vector_distance(v1, v2, &l2_norm);
+}
+
+double linf_distance(Array_double *v1, Array_double *v2) {
+  return vector_distance(v1, v2, &linf_norm);
+}
+\end{verbatim}
+
+\subsubsection{\texttt{sum\_v}}
+\label{sec:org57e2591}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{sum\_v}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double}
+\item Output: a \texttt{double} representing the sum of all the elements of an \texttt{Array\_double}
+\end{itemize}
+
+\begin{verbatim}
+double sum_v(Array_double *v) {
+  double sum = 0;
+  for (size_t i = 0; i < v->size; i++)
+    sum += v->data[i];
+  return sum;
+}
+\end{verbatim}
+
+
+\subsubsection{\texttt{scale\_v}}
+\label{sec:org61b466a}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{scale\_v}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double} and a scalar \texttt{double} to scale the vector
+\item Output: a pointer to a new \texttt{Array\_double} of the scaled input \texttt{Array\_double}
+\end{itemize}
+
+\begin{verbatim}
+Array_double *scale_v(Array_double *v, double m) {
+  Array_double *copy = copy_vector(v);
+  for (size_t i = 0; i < v->size; i++)
+    copy->data[i] *= m;
+  return copy;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{free\_vector}}
+\label{sec:org398d778}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{free\_vector}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double}
+\item Output: nothing.
+\item Side effect: free the memory of the reserved \texttt{Array\_double} on the heap
+\end{itemize}
+
+\begin{verbatim}
+void free_vector(Array_double *v) {
+  free(v->data);
+  free(v);
+}
+\end{verbatim}
+
+\subsubsection{\texttt{copy\_vector}}
+\label{sec:orgf6b116b}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{copy\_vector}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double}
+\item Output: a pointer to a new \texttt{Array\_double} whose \texttt{data} and \texttt{size} are copied from the input
+\texttt{Array\_double}
+\end{itemize}
+
+\begin{verbatim}
+Array_double *copy_vector(Array_double *v) {
+  Array_double *copy = InitArrayWithSize(double, v->size, 0.0);
+  for (size_t i = 0; i < copy->size; ++i)
+    copy->data[i] = v->data[i];
+  return copy;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{format\_vector\_into}}
+\label{sec:org595519d}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{format\_vector\_into}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double} and a pointer to a c-string \texttt{s} to "print" the vector out
+into
+\item Output: nothing.
+\item Side effect: overwritten memory into \texttt{s}
+\end{itemize}
+
+\begin{verbatim}
+void format_vector_into(Array_double *v, char *s) {
+  if (v->size == 0) {
+    strcat(s, "empty");
+    return;
+  }
+
+  for (size_t i = 0; i < v->size; ++i) {
+    char num[64];
+    strcpy(num, "");
+
+    sprintf(num, "%f,", v->data[i]);
+    strcat(s, num);
+  }
+  strcat(s, "\n");
+}
+\end{verbatim}
+
+\subsection{Matrix Routines}
+\label{sec:org53505d6}
+\subsubsection{\texttt{lu\_decomp}}
+\label{sec:org22ad28d}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{lu\_decomp}
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} \(m\) to decompose into a lower triangular and upper triangular
+matrix \(L\), \(U\), respectively such that \(LU = m\).
+\item Output: a pointer to the location in memory in which two \texttt{Matrix\_double}'s reside: the first
+representing \(L\), the second, \(U\).
+\item Errors: Exits and throws a status code of \texttt{-1} when encountering a matrix that cannot be
+decomposed
+\end{itemize}
+
+\begin{verbatim}
+Matrix_double **lu_decomp(Matrix_double *m) {
+  assert(m->cols == m->rows);
+
+  Matrix_double *u = copy_matrix(m);
+  Matrix_double *l = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
+  put_identity_diagonal(l);
+
+  Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
+
+  for (size_t y = 0; y < m->rows; y++) {
+    if (u->data[y]->data[y] == 0) {
+      printf("ERROR: a pivot is zero in given matrix\n");
+      exit(-1);
+    }
+  }
+
+  if (u && l) {
+    for (size_t x = 0; x < m->cols; x++) {
+      for (size_t y = x + 1; y < m->rows; y++) {
+        double denom = u->data[x]->data[x];
+
+        if (denom == 0) {
+          printf("ERROR: non-factorable matrix\n");
+          exit(-1);
+        }
+
+        double factor = -(u->data[y]->data[x] / denom);
+
+        Array_double *scaled = scale_v(u->data[x], factor);
+        Array_double *added = add_v(scaled, u->data[y]);
+        free_vector(scaled);
+        free_vector(u->data[y]);
+
+        u->data[y] = added;
+        l->data[y]->data[x] = -factor;
+      }
+    }
+  }
+
+  u_l[0] = u;
+  u_l[1] = l;
+  return u_l;
+}
+\end{verbatim}
+\subsubsection{\texttt{bsubst}}
+\label{sec:org15fec98}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{bsubst}
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to an upper-triangular \texttt{Matrix\_double} \(u\) and a \texttt{Array\_double}
+\(b\)
+\item Output: a pointer to a new \texttt{Array\_double} whose entries are given by performing
+back substitution
+\end{itemize}
+
+\begin{verbatim}
+Array_double *bsubst(Matrix_double *u, Array_double *b) {
+  assert(u->rows == b->size && u->cols == u->rows);
+
+  Array_double *x = copy_vector(b);
+  for (int64_t row = b->size - 1; row >= 0; row--) {
+    for (size_t col = b->size - 1; col > row; col--)
+      x->data[row] -= x->data[col] * u->data[row]->data[col];
+    x->data[row] /= u->data[row]->data[row];
+  }
+  return x;
+}
+\end{verbatim}
+\subsubsection{\texttt{fsubst}}
+\label{sec:orgdeab27c}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{fsubst}
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a lower-triangular \texttt{Matrix\_double} \(l\) and a \texttt{Array\_double}
+\(b\)
+\item Output: a pointer to a new \texttt{Array\_double} whose entries are given by performing
+forward substitution
+\end{itemize}
+
+\begin{verbatim}
+Array_double *fsubst(Matrix_double *l, Array_double *b) {
+  assert(l->rows == b->size && l->cols == l->rows);
+
+  Array_double *x = copy_vector(b);
+
+  for (size_t row = 0; row < b->size; row++) {
+    for (size_t col = 0; col < row; col++)
+      x->data[row] -= x->data[col] * l->data[row]->data[col];
+    x->data[row] /= l->data[row]->data[row];
+  }
+
+  return x;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{solve\_matrix}}
+\label{sec:orge57c26b}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} \(m\) and a pointer to an \texttt{Array\_double} \(b\)
+\item Output: \(x\) such that \(mx = b\) if such a solution exists (else it's non LU-factorable as discussed
+above)
+\end{itemize}
+
+Here we make use of forward substitution to first solve \(Ly = b\) given \(L\) as the \(L\) factor in
+\texttt{lu\_decomp}. Then we use back substitution to solve \(Ux = y\) for \(x\) similarly given \(U\).
+
+Then, \(LUx = b\), thus \(x\) is a solution.
+
+\begin{verbatim}
+Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
+  assert(b->size == m->rows);
+  assert(m->rows == m->cols);
+
+  Array_double *x = copy_vector(b);
+  Matrix_double **u_l = lu_decomp(m);
+  Matrix_double *u = u_l[0];
+  Matrix_double *l = u_l[1];
+
+  Array_double *b_fsub = fsubst(l, b);
+  x = bsubst(u, b_fsub);
+  free_vector(b_fsub);
+
+  free_matrix(u);
+  free_matrix(l);
+
+  return x;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{m\_dot\_v}}
+\label{sec:org6afa7d5}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} \(m\) and \texttt{Array\_double} \(v\)
+\item Output: the dot product \(mv\) as an \texttt{Array\_double}
+\end{itemize}
+
+\begin{verbatim}
+Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
+  assert(v->size == m->cols);
+
+  Array_double *product = copy_vector(v);
+
+  for (size_t row = 0; row < v->size; ++row)
+    product->data[row] = v_dot_v(m->data[row], v);
+
+  return product;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{put\_identity\_diagonal}}
+\label{sec:orgdd1c373}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double}
+\item Output: a pointer to a copy to \texttt{Matrix\_double} whose diagonal is full of 1's
+\end{itemize}
+
+\begin{verbatim}
+Matrix_double *put_identity_diagonal(Matrix_double *m) {
+  assert(m->rows == m->cols);
+  Matrix_double *copy = copy_matrix(m);
+  for (size_t y = 0; y < m->rows; ++y)
+    copy->data[y]->data[y] = 1.0;
+  return copy;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{copy\_matrix}}
+\label{sec:org3d1b7b0}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double}
+\item Output: a pointer to a copy of the given \texttt{Matrix\_double}
+\end{itemize}
+
+\begin{verbatim}
+Matrix_double *copy_matrix(Matrix_double *m) {
+  Matrix_double *copy = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
+  for (size_t y = 0; y < copy->rows; y++) {
+    free_vector(copy->data[y]);
+    copy->data[y] = copy_vector(m->data[y]);
+  }
+  return copy;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{free\_matrix}}
+\label{sec:org697f6cc}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double}
+\item Output: none.
+\item Side Effects: frees memory reserved by a given \texttt{Matrix\_double} and its member
+\texttt{Array\_double} vectors describing its rows.
+\end{itemize}
+
+\begin{verbatim}
+void free_matrix(Matrix_double *m) {
+  for (size_t y = 0; y < m->rows; ++y)
+    free_vector(m->data[y]);
+  free(m);
+}
+\end{verbatim}
+
+\subsubsection{\texttt{format\_matrix\_into}}
+\label{sec:orgc43bda3}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{format\_matrix\_into}
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} and a pointer to a c-string \texttt{s} to "print" the vector out
+into
+\item Output: nothing.
+\item Side effect: overwritten memory into \texttt{s}
+\end{itemize}
+
+\begin{verbatim}
+void format_matrix_into(Matrix_double *m, char *s) {
+  if (m->rows == 0)
+    strcpy(s, "empty");
+
+  for (size_t y = 0; y < m->rows; ++y) {
+    char row_s[256];
+    strcpy(row_s, "");
+
+    format_vector_into(m->data[y], row_s);
+    strcat(s, row_s);
+  }
+  strcat(s, "\n");
+}
+\end{verbatim}
+\subsection{Linear Routines}
+\label{sec:org1e850f2}
+\subsubsection{\texttt{least\_squares\_lin\_reg}}
+\label{sec:org02e6d37}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{least\_squares\_lin\_reg}
+\item Location: \texttt{src/lin.c}
+\item Input: two pointers to \texttt{Array\_double}'s whose entries correspond two ordered
+pairs in R\textsuperscript{2}
+\item Output: a linear model best representing the ordered pairs via least squares
+regression
+\end{itemize}
+
+\begin{verbatim}
+Line *least_squares_lin_reg(Array_double *x, Array_double *y) {
+  assert(x->size == y->size);
+
+  uint64_t n = x->size;
+  double sum_x = sum_v(x);
+  double sum_y = sum_v(y);
+  double sum_xy = v_dot_v(x, y);
+  double sum_xx = v_dot_v(x, x);
+  double denom = ((n * sum_xx) - (sum_x * sum_x));
+
+  Line *line = malloc(sizeof(Line));
+  line->m = ((sum_xy * n) - (sum_x * sum_y)) / denom;
+  line->a = ((sum_y * sum_xx) - (sum_x * sum_xy)) / denom;
+
+  return line;
+}
+\end{verbatim}
+\subsection{Appendix / Miscellaneous}
+\label{sec:org83c0f8d}
+\subsubsection{Data Types}
+\label{sec:org22f30f4}
+\begin{enumerate}
+\item \texttt{Line}
+\label{sec:orgd014841}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/types.h}
+\end{itemize}
+
+\begin{verbatim}
+typedef struct Line {
+  double m;
+  double a;
+} Line;
+\end{verbatim}
+\item The \texttt{Array\_<type>} and \texttt{Matrix\_<type>}
+\label{sec:org3f90e03}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/types.h}
+\end{itemize}
+
+We define two Pre processor Macros \texttt{DEFINE\_ARRAY} and \texttt{DEFINE\_MATRIX} that take
+as input a type, and construct a struct definition for the given type for
+convenient access to the vector or matrices dimensions.
+
+Such that \texttt{DEFINE\_ARRAY(int)} would expand to:
+
+\begin{verbatim}
+typedef struct {
+  int* data;
+  size_t size;
+} Array_int
+\end{verbatim}
+
+And \texttt{DEFINE\_MATRIX(int)} would expand a to \texttt{Matrix\_int}; containing a pointer to
+a collection of pointers of \texttt{Array\_int}'s and its dimensions.
+
+\begin{verbatim}
+typedef struct {
+  Array_int **data;
+  size_t cols;
+  size_t rows;
+} Matrix_int
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{Macros}
+\label{sec:org60b549e}
+\begin{enumerate}
+\item \texttt{c\_max} and \texttt{c\_min}
+\label{sec:org04ff2db}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/macros.h}
+\item Input: two structures that define an order measure
+\item Output: either the larger or smaller of the two depending on the measure
+\end{itemize}
+
+\begin{verbatim}
+#define c_max(x, y) (((x) >= (y)) ? (x) : (y))
+#define c_min(x, y) (((x) <= (y)) ? (x) : (y))
+\end{verbatim}
+
+\item \texttt{InitArray}
+\label{sec:orgf67f153}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/macros.h}
+\item Input: a type and array of values to initialze an array with such type
+\item Output: a new \texttt{Array\_type} with the size of the given array and its data
+\end{itemize}
+
+\begin{verbatim}
+#define InitArray(TYPE, ...)                                                   \
+  ({                                                                           \
+    TYPE temp[] = __VA_ARGS__;                                                 \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
+    arr->size = sizeof(temp) / sizeof(temp[0]);                                \
+    arr->data = malloc(arr->size * sizeof(TYPE));                              \
+    memcpy(arr->data, temp, arr->size * sizeof(TYPE));                         \
+    arr;                                                                       \
+  })
+\end{verbatim}
+
+\item \texttt{InitArrayWithSize}
+\label{sec:org47e5e66}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/macros.h}
+\item Input: a type, a size, and initial value
+\item Output: a new \texttt{Array\_type} with the given size filled with the initial value
+\end{itemize}
+
+\begin{verbatim}
+#define InitArrayWithSize(TYPE, SIZE, INIT_VALUE)                              \
+  ({                                                                           \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
+    arr->size = SIZE;                                                          \
+    arr->data = malloc(arr->size * sizeof(TYPE));                              \
+    for (size_t i = 0; i < arr->size; i++)                                     \
+      arr->data[i] = INIT_VALUE;                                               \
+    arr;                                                                       \
+  })
+\end{verbatim}
+
+\item \texttt{InitMatrixWithSize}
+\label{sec:org3b96b75}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{inc/macros.h}
+\item Input: a type, number of rows, columns, and initial value
+\item Output: a new \texttt{Matrix\_type} of size \texttt{rows x columns} filled with the initial
+value
+\end{itemize}
+
+\begin{verbatim}
+#define InitMatrixWithSize(TYPE, ROWS, COLS, INIT_VALUE)                       \
+  ({                                                                           \
+    Matrix_##TYPE *matrix = malloc(sizeof(Matrix_##TYPE));                     \
+    matrix->rows = ROWS;                                                       \
+    matrix->cols = COLS;                                                       \
+    matrix->data = malloc(matrix->rows * sizeof(Array_##TYPE *));              \
+    for (size_t y = 0; y < matrix->rows; y++)                                  \
+      matrix->data[y] = InitArrayWithSize(TYPE, COLS, INIT_VALUE);             \
+    matrix;                                                                    \
+  })
+\end{verbatim}
+\end{enumerate}
+\end{document}

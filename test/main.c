@@ -14,12 +14,12 @@ int main() {
   printf("========\n");
 
   printf("Norm, Distance\n");
-  Array_double *v = InitArray(double, {3, 1, -4, 1, 5, -9, 3});
+  Array_double *v = InitArray(double, {3, 1, -4});
   strcpy(s, "");
   format_vector_into(v, s);
   printf("v: %s", s);
 
-  Array_double *w = InitArray(double, {-2, 7, 1, -8, -2, 8, 5});
+  Array_double *w = InitArray(double, {-2, 7, 1});
   strcpy(s, "");
   format_vector_into(w, s);
   printf("w: %s", s);
@@ -51,7 +51,6 @@ int main() {
   printf("w: %s", s);
 
   Line *line = least_squares_lin_reg(v, w);
-
   printf("least_squares_lin_reg(v, w): (%f)x + %f\n", line->m, line->a);
   v = InitArray(double, {1, 2, 3, 4, 5, 6, 7});
   strcpy(s, "");
@@ -64,6 +63,7 @@ int main() {
 
   line = least_squares_lin_reg(v, w);
   printf("least_squares_lin_reg(v, w): (%f)x + %f\n", line->m, line->a);
+  free(line);
   printf("========\n");
 
   printf("LU Decomp\n");
@@ -77,8 +77,9 @@ int main() {
   format_matrix_into(a, s);
   printf("a = %s", s);
 
-  uint32_t solution = 100;
-  Array_double *b = InitArrayWithSize(double, n, (double)solution);
+  uint32_t solution = 1;
+  Array_double *y = InitArrayWithSize(double, n, (double)solution);
+  Array_double *b = m_dot_v(a, y); // q8 steps
   Matrix_double **u_l = lu_decomp(a);
   Matrix_double *u = u_l[0];
   Matrix_double *l = u_l[1];
@@ -91,12 +92,11 @@ int main() {
   printf("l = %s", s);
   strcpy(s, "");
   format_vector_into(b, s);
-  printf("b = %s", s);
+  printf("(after following q8) b = %s", s);
   printf("========\n");
   printf("Forward / Backward Substitution Solution to ax=b\n");
 
   Array_double *b_fsub = fsubst(l, b);
-  free_vector(b);
   strcpy(s, "");
   format_vector_into(b_fsub, s);
   printf("b_fsub: %s", s);
@@ -106,16 +106,19 @@ int main() {
   format_vector_into(x_bsub, s);
   printf("x_bsub: %s", s);
 
+  Array_double *x_solve_matrix = solve_matrix(a, b);
+  free_vector(b);
+  strcpy(s, "");
+  format_vector_into(x_solve_matrix, s);
+  printf("\\--> == x_solve_matrix: %s", s);
+
   free_vector(b_fsub);
+  free_vector(x_solve_matrix);
 
   printf("Verifications\n");
-  for (size_t row = 0; row < a->rows; row++) {
-    double curr = 0;
-    for (size_t col = 0; col < a->cols; col++)
-      curr += a->data[row]->data[col] * x_bsub->data[col];
-    printf("Substituions for values in row %zu = %f, true value err=%.10e\n",
-           row, curr, fabs(curr - solution));
-  }
+  for (size_t i = 0; i < x_bsub->size; i++)
+    printf("in row %zu, solution = %f, true value err=%.10e\n", i,
+           x_bsub->data[i], fabs(x_bsub->data[i] - solution));
 
   return 0;
 }

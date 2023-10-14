@@ -1,10 +1,34 @@
-* My Basic Routines
-* Linear Solution Routines
-** Gaussian Elimination with Backwards Substitution
-** LU factorization
-* Matrix Routines
-** dotproduct
-** crossproduct
-** matrixvector
-** matrixmatrix
+#+TITLE: Homework 4
+#+AUTHOR: Elizabeth Hunt
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
 
+* Question 1
+See the attached LIZFCM Software Manual.
+
+* Question 2, 3, 4
+#+attr_latex: :width 350px
+[[./img/make_run.png]]
+
+* Question 5
+#+attr_latex: :width 350px
+[[./img/test_routine_1.png]]
+
+#+attr_latex: :width 350px
+[[./img/test_routine_2.png]]
+
+* Question 6
+See the LIZFCM Software Manual.
+
+* Question 7
+See ~src/matrix.c -> lu_decomp, fsubst, bsubst, solve_matrix~
+
+* Question 8
+See ~test/main.c -> lines 109 - 113~ in correspondence to the run in Question 5
+
+* Question 9
+See ~test/main.c -> lines 118 - 121~ in correspondence to the run in Question 5
+
+* Question 10
+See the TOC on the first page of the LIZFCM Software Manual.

@@ -21,7 +21,7 @@ all: $(TEST_EXE)
 $(TEST_EXE): $(BIN_DIR) | $(LIBRARY)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $(TEST_SRC) $(LIBRARY) -o $@
 
-$(LIBRARY): $(OBJ)
+$(LIBRARY): $(OBJ) | $(LIB_DIR)
 	ar rcs $(LIBRARY) $(OBJ_DIR)/*.o
 	ranlib $(LIBRARY)
 
@@ -32,6 +32,6 @@ $(BIN_DIR) $(OBJ_DIR) $(LIB_DIR):
 	mkdir -p $@
 
 clean:
-	@$(RM) -r $(BIN_DIR) $(OBJ_DIR)
+	@$(RM) -r $(BIN_DIR) $(OBJ_DIR) $(LIB_DIR)
 
 -include $(OBJ:.o=.d)

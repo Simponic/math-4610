@@ -3,11 +3,23 @@
 #include <stdio.h>
 #include <string.h>
 
-void put_identity_diagonal(Matrix_double *m) {
-  assert(m->rows == m->cols);
+Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
+  assert(v->size == m->cols);
 
+  Array_double *product = copy_vector(v);
+
+  for (size_t row = 0; row < v->size; ++row)
+    product->data[row] = v_dot_v(m->data[row], v);
+
+  return product;
+}
+
+Matrix_double *put_identity_diagonal(Matrix_double *m) {
+  assert(m->rows == m->cols);
+  Matrix_double *copy = copy_matrix(m);
   for (size_t y = 0; y < m->rows; ++y)
-    m->data[y]->data[y] = 1.0;
+    copy->data[y]->data[y] = 1.0;
+  return copy;
 }
 
 Matrix_double *copy_matrix(Matrix_double *m) {
@@ -85,6 +97,25 @@ Array_double *fsubst(Matrix_double *l, Array_double *b) {
       x->data[row] -= x->data[col] * l->data[row]->data[col];
     x->data[row] /= l->data[row]->data[row];
   }
+
+  return x;
+}
+
+Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
+  assert(b->size == m->rows);
+  assert(m->rows == m->cols);
+
+  Array_double *x = copy_vector(b);
+  Matrix_double **u_l = lu_decomp(m);
+  Matrix_double *u = u_l[0];
+  Matrix_double *l = u_l[1];
+
+  Array_double *b_fsub = fsubst(l, b);
+  x = bsubst(u, b_fsub);
+  free_vector(b_fsub);
+
+  free_matrix(u);
+  free_matrix(l);
 
   return x;
 }

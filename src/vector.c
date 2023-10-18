@@ -115,3 +115,14 @@ double sum_v(Array_double *v) {
     sum += v->data[i];
   return sum;
 }
+
+int vector_equal(Array_double *a, Array_double *b) {
+  if (a->size != b->size)
+    return false;
+
+  for (size_t i = 0; i < a->size; ++i) {
+    if (a->data[i] != b->data[i])
+      return false;
+  }
+  return true;
+}

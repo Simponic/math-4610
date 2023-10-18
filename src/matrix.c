@@ -37,7 +37,7 @@ Matrix_double **lu_decomp(Matrix_double *m) {
   Matrix_double *u = copy_matrix(m);
   Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
   Matrix_double *l = put_identity_diagonal(l_empt);
-  free(l_empt);
+  free_matrix(l_empt);
 
   Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 
@@ -139,4 +139,15 @@ void format_matrix_into(Matrix_double *m, char *s) {
     strcat(s, row_s);
   }
   strcat(s, "\n");
+}
+
+int matrix_equal(Matrix_double *a, Matrix_double *b) {
+  if (a->cols != b->cols || a->rows != b->rows)
+    return false;
+
+  for (size_t y = 0; y < a->rows; ++y)
+    if (!vector_equal(a->data[y], b->data[y])) {
+      return false;
+    }
+  return true;
 }

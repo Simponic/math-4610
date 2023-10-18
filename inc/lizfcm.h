@@ -27,6 +27,7 @@ extern double linf_distance(Array_double *v1, Array_double *v2);
 extern Array_double *copy_vector(Array_double *v1);
 extern void free_vector(Array_double *v);
 extern void format_vector_into(Array_double *v, char *s);
+extern int vector_equal(Array_double *a, Array_double *b);
 
 extern Matrix_double *put_identity_diagonal(Matrix_double *m);
 extern Matrix_double **lu_decomp(Matrix_double *m);
@@ -37,7 +38,16 @@ extern Array_double *m_dot_v(Matrix_double *m, Array_double *v);
 extern Matrix_double *copy_matrix(Matrix_double *m);
 extern void free_matrix(Matrix_double *m);
 extern void format_matrix_into(Matrix_double *m, char *s);
+extern int matrix_equal(Matrix_double *a, Matrix_double *b);
 
 extern Line *least_squares_lin_reg(Array_double *x, Array_double *y);
+
+extern double *find_ivt_range(double (*f)(double), double start_x, double delta,
+                              size_t max_steps);
+extern double bisect_find_root(double (*f)(double), double a, double b,
+                               double tolerance, size_t max_iterations);
+extern double bisect_find_root_with_error_assumption(double (*f)(double),
+                                                     double a, double b,
+                                                     double tolerance);
 
 #endif // LIZFCM_H

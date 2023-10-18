@@ -1,0 +1,77 @@
+Find x \in R st f(x) = 0
+
+if f(x^*) = 0 then define x^* = g(x^*) = x^* + f(x^*)
+
+Suppose we approximate x^* by x_0. Then Using the fixed point equations:
+
+x_1 = g(x_0) = x_0 + f(x_0)
+x_2 = g(g_1) \cdots x_{k+1} = g(x_k)
+
+This generates a sequence of approximations to x^*
+
+{X_k} \rightarrow x^*
+
+The algorithm is: Given f(x), x_0, compute x_{k+1} = g(x_k), k = 0, 1, 2, \cdots
+= x_k + f(x_k)
+
+Examples for g(x)
+
+1. x_{k+1} = x_k + f(x_k)
+2. x_{k+1} = x_k - f(x_k)
+3. x_{k+1} = x_k - mf(x_k)
+4. x_{k+q} = s_k - sin(f(x_k))
+
+x^* = root of f
+y^* = solution of y^* = g(y^*)
+
+| x^* - y^* | = x^* - (y^* - f(y^*))
+|x_{k+1} - x^*  | = | g(x_k) - g(x^*) |
+ = |g(x^*) + g'(x^k)(x_k - x^*) + \cdots) - g(x^*)|
+ = |g'(x^*)(x_k - x^*) + hot|
+ \leq | g'(x^*)(x_k - x^*)| + (pos val)
+ \leq |g'(x^*)| (|x_k - x^*|)
+
+\Rightarrow |x_{k+1} - x^*| \leq |g'(x^*)| \cdot |x_k - x^*|
+
+For this to converge, we need |g'(x^*)| \lt 1
+
+* Example
+f(x) = xe^{-x}
+
+Then x^* = 0
+
+If we construct g(x) = 10x + xe^-x
+
+Then g'(x) = 10 + (e^-x - xe^-x) \Rightarrow g'(x) = 10 + e^0 - 0 = 11 (this wouldn't converge)n
+
+However if g(x)) = x - (xe^-x), g'(x) = 1 - (e^-x - xe^-x) \Rightarrow g'(x^*) = 0
+
+Then assume x_0 = 1/10
+Then x_1 = g(x_0) = 1/10 - 1/10(e^{-1/10})
+\cdots
+
+* More General, Robust Algorithm
+** Theorem: Intermediate Value Theorem
+Suppose that f(x) is a continuous function on [a, b] then
+
+\lim_{x -> x_0} (f(x)) = f(x_0)
+
+For all x_0 \in (a, b) and at the endpoints:
+
+\lim_{a^+} f(x) = f(a)
+\lim_{x -> b^-} f(x) = f(b)
+
+Then if s is a number between f(a) and f(b), there exists a point c \in (a, b) such that f(c) = s.
+
+To use this to ensure there is a root, we just take evaluations f(a) and f(b) that cross 0
+
+So the condition we construct is:
+f(a) \cdot f(b) \lt 0
+
+** Next Step: compute the midpoint of [a, b]
+c = 1/2 (a + b)
+
+do binary search on c by taking this midpoint and ensuring f(a) \cdot f(c) \lt 0 or f(c) \cdot f(b) \lt 0 is met,
+choosing the correct interval
+
+

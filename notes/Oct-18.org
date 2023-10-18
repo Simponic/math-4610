@@ -1,0 +1,18 @@
+Error Analysis Of Bisection Root Finding:
+
+e_0 \le b - a = b_0 - a_0
+e_1 \le b_1 - a_1 = 1/2(b_0 - a_0)
+e_2 \le b_2 - a_2 = 1/2(b_1 - a_1) = (1/2)^2(b_0 - a_0)
+e_k \le b_k - a_k = 1/2(b_{k-1} - a_{k-1}) = \cdots = (1/2)^k (b_0 - a_0)
+
+
+e_k \le (1/2)^k (b_0 - a_0) = tolerance
+\Rightarrow log(1/2^k) + log(b_0 - a_0) = log(tolerance)
+\Rightarrow k log(1/2) + log(tolerance) - log(b_0 - a_0)
+\Rightarrow k log(1/2) = log(tolerance / (b_0 - a_0))
+\Rightarrow k \ge log(tolerance / (b_0 - a_0)) / log(1/2)
+
+The Bisection Method applied to an interval [a, b] for a continous function will reduce the error
+each time through by at least one half.
+
+| x_{k+1} - x_k | \le 1/2|x_k - x^* |

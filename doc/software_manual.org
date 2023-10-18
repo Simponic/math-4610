@@ -1,7 +1,8 @@
-#+TITLE: LIZFCM Software Manual (v0.1)
+#+TITLE: LIZFCM Software Manual (v0.2)
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}
+#+STARTUP: entitiespretty fold inlineimages
 
 * Design
 The LIZFCM static library (at [[https://github.com/Simponic/math-4610][[https://github.com/Simponic/math-4610]] is a successor to my
@@ -24,8 +25,8 @@ well as Arch Linux.
 1. ~cd~ into the root of the repo
 2. ~make~
    
-Then, as of homework 4, the testing routine in ~test/main.c~ can be run via
-~./dist/lizfcm.test~.
+Then, as of homework 5, the testing routines are provided in ~test~ and utilize the
+utest microlibrary. They compile to a binary in ~./dist/lizfcm.test~.
 
 Execution of the Makefile will perform compilation of individual routines.
 
@@ -591,6 +592,80 @@ void format_matrix_into(Matrix_double *m, char *s) {
   strcat(s, "\n");
 }
 #+END_SRC
+** Root Finding Methods
+*** ~find_ivt_range~
++ Author: Elizabeth Hunt
++ Name: ~find_ivt_range~
++ Location: ~src/roots.c~
++ Input: a pointer to a oneary function taking a double and producing a double, the beginning point
+  in $R$ to search for a range, a ~delta~ step that is taken, and a ~max_steps~ number of maximum
+  iterations to perform.
++ Output: a pair of ~double~'s representing a closed closed interval ~[beginning, end]~
+
+#+BEGIN_SRC c
+double *find_ivt_range(double (*f)(double), double start_x, double delta,
+                       size_t max_steps) {
+  double *range = malloc(sizeof(double) * 2);
+
+  double a = start_x;
+
+  while (f(a) * f(start_x) >= 0 && max_steps-- > 0)
+    a += delta;
+
+  if (max_steps == 0 && f(a) * f(start_x) > 0)
+    return NULL;
+
+  range[0] = start_x;
+  range[1] = a + delta;
+  return range;
+}
+#+END_SRC
+*** ~bisect_find_root~
++ Author: Elizabeth Hunt
++ Name(s): ~bisect_find_root~
++ Input: a one-ary function taking a double and producing a double, a closed interval represented
+  by ~a~ and ~b~: ~[a, b]~, a ~tolerance~ at which we return the estimated root, and a
+  ~max_iterations~ to break us out of a loop if we can never reach the ~tolerance~
++ Output: a ~double~ representing the estimated root
++ Description: recursively uses binary search to split the interval until we reach ~tolerance~. We
+  also assume the function ~f~ is continuous on ~[a, b]~.
+
+#+BEGIN_SRC c
+double bisect_find_root(double (*f)(double), double a, double b,
+                        double tolerance, size_t max_iterations) {
+  assert(a <= b);
+  // guarantee there's a root somewhere between a and b by IVT
+  assert(f(a) * f(b) < 0);
+
+  double c = (1.0 / 2) * (a + b);
+  if (b - a < tolerance || max_iterations == 0)
+    return c;
+  if (f(a) * f(c) < 0)
+    return bisect_find_root(f, a, c, tolerance, max_iterations - 1);
+  return bisect_find_root(f, c, b, tolerance, max_iterations - 1);
+}
+#+END_SRC
+*** ~bisect_find_root_with_error_assumption~
++ Author: Elizabeth Hunt
++ Name: ~bisect_find_root_with_error_assumption~
++ Input: a one-ary function taking a double and producing a double, a closed interval represented
+  by ~a~ and ~b~: ~[a, b]~, and a ~tolerance~ at which we return the estimated root
++ Output: a ~double~ representing the estimated root
++ Description: using the bisection method we know that $e_k \le (\frac{1}{2})^k (b_0 - a_0)$. So we can
+  calculate $k$ at the worst possible case (that the error is exactly the tolerance) to be
+  $\frac{log(tolerance) - log(b_0 - a_0)}{log(\frac{1}{2})}$. We pass this value into the ~max_iterations~
+  of ~bisect_find_root~ as above.
+#+BEGIN_SRC c
+double bisect_find_root_with_error_assumption(double (*f)(double), double a,
+                                              double b, double tolerance) {
+  assert(a <= b);
+
+  uint64_t max_iterations =
+      (uint64_t)ceil((log(tolerance) - log(b - a)) / log(1 / 2.0));
+  return bisect_find_root(f, a, b, tolerance, max_iterations);
+}
+#+END_SRC
+
 ** Linear Routines
 *** ~least_squares_lin_reg~
 + Author: Elizabeth Hunt

@@ -1,0 +1,5 @@
+-lm
+-Iinc
+-MMD
+-MP
+-Wall

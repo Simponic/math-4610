@@ -35,6 +35,8 @@ extern Array_double *bsubst(Matrix_double *u, Array_double *b);
 extern Array_double *fsubst(Matrix_double *l, Array_double *b);
 extern Array_double *solve_matrix(Matrix_double *m, Array_double *b);
 extern Array_double *m_dot_v(Matrix_double *m, Array_double *v);
+extern Matrix_double *m_dot_m(Matrix_double *a, Matrix_double *b);
+extern Array_double *col_v(Matrix_double *m, size_t x);
 extern Matrix_double *copy_matrix(Matrix_double *m);
 extern void free_matrix(Matrix_double *m);
 extern void format_matrix_into(Matrix_double *m, char *s);

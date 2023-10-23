@@ -94,3 +94,39 @@ UTEST(matrix, solve_matrix) {
   free_vector(b);
   free_vector(solution);
 }
+
+UTEST(matrix, col_v) {
+  Matrix_double *m = InitMatrixWithSize(double, 2, 3, 0.0);
+  // set element to its column index
+  for (size_t y = 0; y < m->rows; y++) {
+    for (size_t x = 0; x < m->cols; x++) {
+      m->data[y]->data[x] = x;
+    }
+  }
+
+  Array_double *col, *expected;
+  for (size_t x = 0; x < m->cols; x++) {
+    col = col_v(m, x);
+    expected = InitArrayWithSize(double, m->rows, (double)x);
+    EXPECT_TRUE(vector_equal(expected, col));
+    free_vector(col);
+    free_vector(expected);
+  }
+
+  free_matrix(m);
+}
+
+UTEST(matrix, m_dot_m) {
+  Matrix_double *a = InitMatrixWithSize(double, 1, 3, 12.0);
+  Matrix_double *b = InitMatrixWithSize(double, 3, 1, 10.0);
+
+  Matrix_double *prod = m_dot_m(a, b);
+
+  EXPECT_EQ(prod->cols, 1);
+  EXPECT_EQ(prod->rows, 1);
+  EXPECT_EQ(12.0 * 10.0 * 3, prod->data[0]->data[0]);
+
+  free_matrix(a);
+  free_matrix(b);
+  free_matrix(prod);
+}

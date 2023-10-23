@@ -14,6 +14,33 @@ Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
   return product;
 }
 
+Array_double *col_v(Matrix_double *m, size_t x) {
+  assert(x < m->cols);
+
+  Array_double *col = InitArrayWithSize(double, m->rows, 0.0);
+  for (size_t y = 0; y < m->rows; y++)
+    col->data[y] = m->data[y]->data[x];
+
+  return col;
+}
+
+Matrix_double *m_dot_m(Matrix_double *a, Matrix_double *b) {
+  assert(a->cols == b->rows);
+
+  Matrix_double *prod = InitMatrixWithSize(double, a->rows, b->cols, 0.0);
+
+  Array_double *curr_col;
+  for (size_t y = 0; y < a->rows; y++) {
+    for (size_t x = 0; x < b->cols; x++) {
+      curr_col = col_v(b, x);
+      prod->data[y]->data[x] = v_dot_v(curr_col, a->data[y]);
+      free_vector(curr_col);
+    }
+  }
+
+  return prod;
+}
+
 Matrix_double *put_identity_diagonal(Matrix_double *m) {
   assert(m->rows == m->cols);
   Matrix_double *copy = copy_matrix(m);

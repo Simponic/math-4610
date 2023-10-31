@@ -7,6 +7,38 @@ UTEST(matrix, free) {
   EXPECT_NE(data_addr, (uint64_t)(m->data));
 }
 
+UTEST(matrix, add_column) {
+  Matrix_double *m = InitMatrixWithSize(double, 5, 5, 0.0);
+  Array_double *col = InitArray(double, {1.0, 2.0, 3.0, 4.0, 5.0});
+  Matrix_double *new_m = add_column(m, col);
+
+  for (size_t row = 0; row < m->rows; row++)
+    EXPECT_EQ(new_m->data[row]->data[m->cols], col->data[row]);
+  EXPECT_EQ(new_m->cols, m->cols + 1);
+
+  free_matrix(m);
+  free_matrix(new_m);
+  free_vector(col);
+}
+
+UTEST(matrix, slice_column) {
+  size_t slice = 1;
+
+  Matrix_double *m = InitMatrixWithSize(double, 5, 5, 1.0 * (rand() % 10));
+  Matrix_double *new_m = slice_column(m, slice);
+
+  for (size_t row = 0; row < m->rows; row++) {
+    Array_double *sliced_row = slice_element(m->data[row], slice);
+
+    EXPECT_TRUE(vector_equal(new_m->data[row], sliced_row));
+    free_vector(sliced_row);
+  }
+  EXPECT_EQ(new_m->cols, m->cols - 1);
+
+  free_matrix(m);
+  free_matrix(new_m);
+}
+
 UTEST(matrix, put_identity_diagonal) {
   Matrix_double *m = InitMatrixWithSize(double, 8, 8, 0.0);
   Matrix_double *ident = put_identity_diagonal(m);
@@ -47,11 +79,53 @@ UTEST(matrix, m_dot_v) {
   free_vector(dotted);
 }
 
+UTEST(matrix, bsubst) {
+  Matrix_double *u = InitMatrixWithSize(double, 3, 3, 0.0);
+  u->data[0]->data[0] = 1.0;
+  u->data[0]->data[1] = 2.0;
+  u->data[0]->data[2] = 3.0;
+  u->data[1]->data[1] = 4.0;
+  u->data[1]->data[2] = 5.0;
+  u->data[2]->data[2] = 6.0;
+
+  Array_double *b = InitArray(double, {14.0, 29.0, 30.0});
+
+  Array_double *solution = bsubst(u, b);
+  EXPECT_NEAR(solution->data[0], -3.0, 0.0001);
+  EXPECT_NEAR(solution->data[1], 1.0, 0.0001);
+  EXPECT_NEAR(solution->data[2], 5.0, 0.0001);
+
+  free_matrix(u);
+  free_vector(b);
+  free_vector(solution);
+}
+
+UTEST(matrix, fsubst) {
+  Matrix_double *l = InitMatrixWithSize(double, 3, 3, 0.0);
+  l->data[0]->data[0] = 1.0;
+  l->data[1]->data[0] = 2.0;
+  l->data[1]->data[1] = 3.0;
+  l->data[2]->data[0] = 4.0;
+  l->data[2]->data[1] = 5.0;
+  l->data[2]->data[2] = 6.0;
+
+  Array_double *b = InitArray(double, {14.0, 13.0, 32.0});
+
+  Array_double *solution = fsubst(l, b);
+  EXPECT_NEAR(solution->data[0], 14.0, 0.0001);
+  EXPECT_NEAR(solution->data[1], -5.0, 0.0001);
+  EXPECT_NEAR(solution->data[2], 0.16667, 0.0001);
+
+  free_matrix(l);
+  free_vector(b);
+  free_vector(solution);
+}
+
 UTEST(matrix, lu_decomp) {
-  Matrix_double *m = InitMatrixWithSize(double, 8, 8, 0.0);
+  Matrix_double *m = InitMatrixWithSize(double, 10, 10, 0.0);
   for (size_t y = 0; y < m->rows; ++y) {
     for (size_t x = 0; x < m->cols; ++x)
-      m->data[y]->data[x] = x == y ? 5.0 : (5.0 - rand() % 10 + 1);
+      m->data[y]->data[x] = x == y ? 20.0 : (100.0 - rand() % 100) / 100.0;
   }
 
   Matrix_double **ul = lu_decomp(m);
@@ -75,15 +149,40 @@ UTEST(matrix, lu_decomp) {
   free(ul);
 }
 
-UTEST(matrix, solve_matrix) {
-  Matrix_double *m = InitMatrixWithSize(double, 8, 8, 0.0);
+UTEST(matrix, solve_gaussian_elimination) {
+  Matrix_double *m = InitMatrixWithSize(double, 10, 10, 0.0);
   for (size_t y = 0; y < m->rows; ++y) {
     for (size_t x = 0; x < m->cols; ++x)
-      m->data[y]->data[x] = x == y ? 10.0 : (5.0 - rand() % 10 + 1);
+      m->data[y]->data[x] = x == y ? 20.0 : (100.0 - rand() % 100) / 100.0;
   }
 
-  Array_double *b = InitArray(double, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
-  Array_double *solution = solve_matrix(m, b);
+  Array_double *b_1 = InitArrayWithSize(double, m->rows, 1.0);
+  Array_double *b = m_dot_v(m, b_1);
+
+  Array_double *solution = solve_matrix_gaussian(m, b);
+
+  for (size_t y = 0; y < m->rows; y++) {
+    double dot = v_dot_v(m->data[y], solution);
+    EXPECT_NEAR(b->data[y], dot, 0.0001);
+  }
+
+  free_vector(b_1);
+  free_matrix(m);
+  free_vector(b);
+  free_vector(solution);
+}
+
+UTEST(matrix, solve_matrix_lu_bsubst) {
+  Matrix_double *m = InitMatrixWithSize(double, 10, 10, 0.0);
+  for (size_t y = 0; y < m->rows; ++y) {
+    for (size_t x = 0; x < m->cols; ++x)
+      m->data[y]->data[x] = x == y ? 20.0 : (100.0 - rand() % 100) / 100.0;
+  }
+
+  Array_double *b_1 = InitArrayWithSize(double, m->rows, 1.0);
+  Array_double *b = m_dot_v(m, b_1);
+
+  Array_double *solution = solve_matrix_lu_bsubst(m, b);
 
   for (size_t y = 0; y < m->rows; y++) {
     double dot = v_dot_v(m->data[y], solution);
@@ -92,6 +191,7 @@ UTEST(matrix, solve_matrix) {
 
   free_matrix(m);
   free_vector(b);
+  free_vector(b_1);
   free_vector(solution);
 }
 

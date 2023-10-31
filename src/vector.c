@@ -88,6 +88,21 @@ Array_double *copy_vector(Array_double *v) {
   return copy;
 }
 
+Array_double *add_element(Array_double *v, double x) {
+  Array_double *pushed = InitArrayWithSize(double, v->size + 1, 0.0);
+  for (size_t i = 0; i < v->size; ++i)
+    pushed->data[i] = v->data[i];
+  pushed->data[v->size] = x;
+  return pushed;
+}
+
+Array_double *slice_element(Array_double *v, size_t x) {
+  Array_double *sliced = InitArrayWithSize(double, v->size - 1, 0.0);
+  for (size_t i = 0; i < v->size - 1; ++i)
+    sliced->data[i] = i >= x ? v->data[i + 1] : v->data[i];
+  return sliced;
+}
+
 void free_vector(Array_double *v) {
   free(v->data);
   free(v);

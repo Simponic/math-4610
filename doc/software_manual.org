@@ -5,7 +5,7 @@
 #+STARTUP: entitiespretty fold inlineimages
 
 * Design
-The LIZFCM static library (at [[https://github.com/Simponic/math-4610][[https://github.com/Simponic/math-4610]] is a successor to my
+The LIZFCM static library (at [[https://github.com/Simponic/math-4610]]) is a successor to my
 attempt at writing codes for the Fundamentals of Computational Mathematics course in Common
 Lisp, but the effort required to meet the requirement of creating a static library became
 too difficult to integrate outside of the ~ASDF~ solution that Common Lisp already brings
@@ -14,13 +14,14 @@ to the table.
 All of the work established in ~deprecated-cl~ has been painstakingly translated into
 the C programming language. I have a couple tenets for its design:
 
-+ Implemntations of routines should all be done immutably in respect to arguments.
++ Implementations of routines should all be done immutably in respect to arguments.
 + Functional programming is good (it's... rough in C though).
-+ Routines are separated into "module" c files, and not individual files per function.
++ Routines are separated into "modules" that follow a form of separation of concerns
+  in files, and not individual files per function.
 
 * Compilation
-A provided ~Makefile~ is added for convencience. It has been tested on an M1 machine running MacOS as
-well as Arch Linux.
+A provided ~Makefile~ is added for convencience. It has been tested on an ~arm~-based M1 machine running
+MacOS as well as ~x86~ Arch Linux.
 
 1. ~cd~ into the root of the repo
 2. ~make~
@@ -317,6 +318,39 @@ void free_vector(Array_double *v) {
 }
 #+END_SRC
 
+*** ~add_element~
++ Author: Elizabeth Hunt
++ Name: ~add_element~
++ Location: ~src/vector.c~
++ Input: a pointer to an ~Array_double~
++ Output: a new ~Array_double~ with element ~x~ appended.
+
+#+BEGIN_SRC c
+Array_double *add_element(Array_double *v, double x) {
+  Array_double *pushed = InitArrayWithSize(double, v->size + 1, 0.0);
+  for (size_t i = 0; i < v->size; ++i)
+    pushed->data[i] = v->data[i];
+  pushed->data[v->size] = x;
+  return pushed;
+}
+#+END_SRC
+
+*** ~slice_element~
++ Author: Elizabeth Hunt
++ Name: ~slice_element~
++ Location: ~src/vector.c~
++ Input: a pointer to an ~Array_double~
++ Output: a new ~Array_double~ with element ~x~ sliced.
+
+#+BEGIN_SRC c
+Array_double *slice_element(Array_double *v, size_t x) {
+  Array_double *sliced = InitArrayWithSize(double, v->size - 1, 0.0);
+  for (size_t i = 0; i < v->size - 1; ++i)
+    sliced->data[i] = i >= x ? v->data[i + 1] : v->data[i];
+  return sliced;
+}
+#+END_SRC
+
 *** ~copy_vector~
 + Author: Elizabeth Hunt
 + Name: ~copy_vector~
@@ -370,55 +404,54 @@ void format_vector_into(Array_double *v, char *s) {
   matrix $L$, $U$, respectively such that $LU = m$.
 + Output: a pointer to the location in memory in which two ~Matrix_double~'s reside: the first
   representing $L$, the second, $U$.
-+ Errors: Exits and throws a status code of ~-1~ when encountering a matrix that cannot be
++ Errors: Fails assertions when encountering a matrix that cannot be
   decomposed
 
 #+BEGIN_SRC c
-  Matrix_double **lu_decomp(Matrix_double *m) {
-    assert(m->cols == m->rows);
+Matrix_double **lu_decomp(Matrix_double *m) {
+  assert(m->cols == m->rows);
 
-    Matrix_double *u = copy_matrix(m);
-    Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
-    Matrix_double *l = put_identity_diagonal(l_empt);
-    free(l_empt);
+  Matrix_double *u = copy_matrix(m);
+  Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
+  Matrix_double *l = put_identity_diagonal(l_empt);
+  free_matrix(l_empt);
 
+  Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 
-    Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
-
-    for (size_t y = 0; y < m->rows; y++) {
-      if (u->data[y]->data[y] == 0) {
-        printf("ERROR: a pivot is zero in given matrix\n");
-        exit(-1);
-      }
+  for (size_t y = 0; y < m->rows; y++) {
+    if (u->data[y]->data[y] == 0) {
+      printf("ERROR: a pivot is zero in given matrix\n");
+      assert(false);
     }
-
-    if (u && l) {
-      for (size_t x = 0; x < m->cols; x++) {
-        for (size_t y = x + 1; y < m->rows; y++) {
-          double denom = u->data[x]->data[x];
-
-          if (denom == 0) {
-            printf("ERROR: non-factorable matrix\n");
-            exit(-1);
-          }
-
-          double factor = -(u->data[y]->data[x] / denom);
-
-          Array_double *scaled = scale_v(u->data[x], factor);
-          Array_double *added = add_v(scaled, u->data[y]);
-          free_vector(scaled);
-          free_vector(u->data[y]);
-
-          u->data[y] = added;
-          l->data[y]->data[x] = -factor;
-        }
-      }
-    }
-
-    u_l[0] = u;
-    u_l[1] = l;
-    return u_l;
   }
+
+  if (u && l) {
+    for (size_t x = 0; x < m->cols; x++) {
+      for (size_t y = x + 1; y < m->rows; y++) {
+        double denom = u->data[x]->data[x];
+
+        if (denom == 0) {
+          printf("ERROR: non-factorable matrix\n");
+          assert(false);
+        }
+
+        double factor = -(u->data[y]->data[x] / denom);
+
+        Array_double *scaled = scale_v(u->data[x], factor);
+        Array_double *added = add_v(scaled, u->data[y]);
+        free_vector(scaled);
+        free_vector(u->data[y]);
+
+        u->data[y] = added;
+        l->data[y]->data[x] = -factor;
+      }
+    }
+  }
+
+  u_l[0] = u;
+  u_l[1] = l;
+  return u_l;
+}
 #+END_SRC
 *** ~bsubst~
 + Author: Elizabeth Hunt
@@ -467,7 +500,7 @@ Array_double *fsubst(Matrix_double *l, Array_double *b) {
 }
 #+END_SRC
 
-*** ~solve_matrix~
+*** ~solve_matrix_lu_bsubst~
 + Author: Elizabeth Hunt
 + Location: ~src/matrix.c~
 + Input: a pointer to a ~Matrix_double~ $m$ and a pointer to an ~Array_double~ $b$
@@ -480,7 +513,7 @@ Here we make use of forward substitution to first solve $Ly = b$ given $L$ as th
 Then, $LUx = b$, thus $x$ is a solution.
 
 #+BEGIN_SRC c
-Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
+Array_double *solve_matrix_lu_bsubst(Matrix_double *m, Array_double *b) {
   assert(b->size == m->rows);
   assert(m->rows == m->cols);
 
@@ -495,10 +528,96 @@ Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
 
   free_matrix(u);
   free_matrix(l);
+  free(u_l);
 
   return x;
 }
 #+END_SRC
+
+*** ~gaussian_elimination~
++ Author: Elizabeth Hunt
++ Location: ~src/matrix.c~
++ Input: a pointer to a ~Matrix_double~ $m$ 
++ Output: a pointer to a copy of $m$ in reduced echelon form
+
+This works by finding the row with a maximum value in the column $k$. Then, it uses that as a pivot, and
+applying reduction to all other rows. The general idea is available at [[https://en.wikipedia.org/wiki/Gaussian_elimination]].
+
+#+BEGIN_SRC c
+Matrix_double *gaussian_elimination(Matrix_double *m) {
+  uint64_t h = 0;
+  uint64_t k = 0;
+
+  Matrix_double *m_cp = copy_matrix(m);
+
+  while (h < m_cp->rows && k < m_cp->cols) {
+    uint64_t max_row = 0;
+    double total_max = 0.0;
+
+    for (uint64_t row = h; row < m_cp->rows; row++) {
+      double this_max = c_max(fabs(m_cp->data[row]->data[k]), total_max);
+      if (c_max(this_max, total_max) == this_max) {
+        max_row = row;
+      }
+    }
+
+    if (max_row == 0) {
+      k++;
+      continue;
+    }
+
+    Array_double *swp = m_cp->data[max_row];
+    m_cp->data[max_row] = m_cp->data[h];
+    m_cp->data[h] = swp;
+
+    for (uint64_t row = h + 1; row < m_cp->rows; row++) {
+      double factor = m_cp->data[row]->data[k] / m_cp->data[h]->data[k];
+      m_cp->data[row]->data[k] = 0.0;
+
+      for (uint64_t col = k + 1; col < m_cp->cols; col++) {
+        m_cp->data[row]->data[col] -= m_cp->data[h]->data[col] * factor;
+      }
+    }
+
+    h++;
+    k++;
+  }
+
+  return m_cp;
+}
+#+END_SRC
+
+*** ~solve_matrix_gaussian~
++ Author: Elizabeth Hunt
++ Location: ~src/matrix.c~
++ Input: a pointer to a ~Matrix_double~ $m$ and a target ~Array_double~ $b$
++ Output: a pointer to a vector $x$ being the solution to the equation $mx = b$
+
+We first perform ~gaussian_elimination~ after augmenting $m$ and $b$. Then, as $m$ is in reduced echelon form, it's an upper
+triangular matrix, so we can perform back substitution to compute $x$.
+
+#+BEGIN_SRC c
+Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b) {
+  assert(b->size == m->rows);
+  assert(m->rows == m->cols);
+
+  Matrix_double *m_augment_b = add_column(m, b);
+  Matrix_double *eliminated = gaussian_elimination(m_augment_b);
+
+  Array_double *b_gauss = col_v(eliminated, m->cols);
+  Matrix_double *u = slice_column(eliminated, m->rows);
+
+  Array_double *solution = bsubst(u, b_gauss);
+
+  free_matrix(m_augment_b);
+  free_matrix(eliminated);
+  free_matrix(u);
+  free_vector(b_gauss);
+
+  return solution;
+}
+#+END_SRC
+
 
 *** ~m_dot_v~
 + Author: Elizabeth Hunt
@@ -532,6 +651,48 @@ Matrix_double *put_identity_diagonal(Matrix_double *m) {
   for (size_t y = 0; y < m->rows; ++y)
     copy->data[y]->data[y] = 1.0;
   return copy;
+}
+#+END_SRC
+
+*** ~slice_column~
++ Author: Elizabeth Hunt
++ Location: ~src/matrix.c~
++ Input: a pointer to a ~Matrix_double~
++ Output: a pointer to a copy of the given ~Matrix_double~ with column at ~x~ sliced
+
+#+BEGIN_SRC c
+Matrix_double *slice_column(Matrix_double *m, size_t x) {
+  Matrix_double *sliced = copy_matrix(m);
+
+  for (size_t row = 0; row < m->rows; row++) {
+    Array_double *old_row = sliced->data[row];
+    sliced->data[row] = slice_element(old_row, x);
+    free_vector(old_row);
+  }
+  sliced->cols--;
+
+  return sliced;
+}
+#+END_SRC
+
+*** ~add_column~
++ Author: Elizabet Hunt
++ Location: ~src/matrix.c~
++ Input: a pointer to a ~Matrix_double~ and a new vector representing the appended column ~x~
++ Output: a pointer to a copy of the given ~Matrix_double~ with a new column ~x~
+
+#+BEGIN_SRC c
+Matrix_double *add_column(Matrix_double *m, Array_double *v) {
+  Matrix_double *pushed = copy_matrix(m);
+
+  for (size_t row = 0; row < m->rows; row++) {
+    Array_double *old_row = pushed->data[row];
+    pushed->data[row] = add_element(old_row, v->data[row]);
+    free_vector(old_row);
+  }
+
+  pushed->cols++;
+  return pushed;
 }
 #+END_SRC
 

@@ -10,6 +10,28 @@ UTEST(vector, copy_vector) {
   free_vector(w);
 }
 
+UTEST(vector, add_element) {
+  Array_double *v = InitArray(double, {3, 1, -4});
+  Array_double *w = add_element(v, -2);
+  Array_double *w_expect = InitArray(double, {3, 1, -4, -2});
+  EXPECT_TRUE(vector_equal(w, w_expect));
+
+  free_vector(v);
+  free_vector(w);
+  free_vector(w_expect);
+}
+
+UTEST(vector, slice_element) {
+  Array_double *v = InitArray(double, {3, 1, -4});
+  Array_double *w = slice_element(v, 1);
+  Array_double *w_expect = InitArray(double, {3, -4});
+  EXPECT_TRUE(vector_equal(w, w_expect));
+
+  free_vector(v);
+  free_vector(w);
+  free_vector(w_expect);
+}
+
 UTEST(vector, free_vector) {
   Array_double *v = InitArray(double, {3, 1, -4});
   uint64_t arr_addr = (uint64_t)v->data;

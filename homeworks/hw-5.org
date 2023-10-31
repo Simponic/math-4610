@@ -1,0 +1,59 @@
+#+TITLE: Homework 5
+#+AUTHOR: Elizabeth Hunt
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
+
+* Question One
+See LIZFCM \rightarrow Matrix Routines \rightarrow ~lu decomp~ & ~bsubst~.
+
+The test ~UTEST(matrix, lu_decomp)~ is a unit test for the ~lu_decomp~ routine,
+and ~UTEST(matrix, bsubst)~ verifies back substitution on an upper triangular
+3 \times 3 matrix with a known solution that can be verified manually.
+
+Both can be found in ~tests/matrix.t.c~.
+
+* Question Two
+Unless the following are met, the resulting solution will be garbage.
+
+1. The matrix $U$ must be not be singular.
+2. $U$ must be square (or it will fail the ~assert~).
+3. The system created by $Ux = b$ must be consistent.
+4. $U$ is in (obviously) upper-triangular form.
+
+Thus, the actual calculation performing the $LU$ decomposition
+(in ~lu_decomp~) does a sanity
+check for 1-3 will fail an assert, should a point along the diagonal (pivot) be
+zero, or the matrix be non-factorable.
+
+* Question Three
+See LIZFCM \rightarrow Matrix Routines \rightarrow ~fsubst~.
+
+~UTEST(matrix, fsubst)~ verifies forward substitution on a lower triangular 3 \times 3
+matrix with a known solution that can be verified manually.
+
+* Question Four
+
+See LIZFCM \rightarrow Matrix Routines \rightarrow ~gaussian_elimination~ and ~solve_gaussian_elimination~.
+
+* Question Five
+See LIZFCM \rightarrow Matrix Routines \rightarrow ~m_dot_v~, and the ~UTEST(matrix, m_dot_v)~ in
+~tests/matrix.t.c~.
+
+* Question Six
+See ~UTEST(matrix, solve_gaussian_elimination)~ in ~tests/matrix.t.c~, which generates a diagonally dominant 10 \times 10 matrix
+and shows that the solution is consistent with the initial matrix, according to the steps given. Then,
+we do a dot product between each row of the diagonally dominant matrix and the solution vector to ensure
+it is near equivalent to the input vector.
+
+* Question Seven
+See ~UTEST(matrix, solve_matrix_lu_bsubst)~ which does the same test in Question Six with the solution according to
+~solve_matrix_lu_bsubst~ as shown in the Software Manual.
+
+* Question Eight
+No, since the time complexity for Gaussian Elimination is always less than that of the LU factorization solution by $O(n^2)$ operations
+(in LU factorization we perform both backwards and forwards substitutions proceeding the LU decomp, in Gaussian Elimination we only need
+back substitution).
+
+* Question Nine, Ten
+See LIZFCM Software manual and shared library in ~dist~ after compiling.

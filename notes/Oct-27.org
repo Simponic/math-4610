@@ -1,0 +1,26 @@
+Use a bisection criterion for a start
+
+Hybrid Method: combine Bisection and Higher Order Method:
+- Newton's Method
+- Secant Method (Newton's method with secant approx.)
+
+
+#+BEGIN_SRC c
+fa = f(a)
+fb = f(b)
+if (fa * fb >= 0) return
+
+error = 10 * tol
+iter = 0
+
+while (error > tol && iter < maxiter) {
+x0 = 0.5 * (a + b)
+x1 = x0 - f(x0) / f'(x0)
+if (abs(x1 - x0) > 0.5 * (b - a)) {
+// do bisection
+} else{
+// do newton's method
+}
+}
+#+END_SRC
+

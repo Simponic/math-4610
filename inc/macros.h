@@ -52,7 +52,7 @@
 #define c_max(x, y) (((x) >= (y)) ? (x) : (y))
 #define c_min(x, y) (((x) <= (y)) ? (x) : (y))
 
-#define true 1;
-#define false 0;
+#define true 1
+#define false 0
 
 #endif // MACROS_H

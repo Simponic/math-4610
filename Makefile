@@ -22,7 +22,7 @@ LDFLAGS  := -lm
 all: $(TEST_EXE)
 
 $(TEST_EXE): $(TEST_OBJ) $(LIBRARY) | $(BIN_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(LIBRARY): $(OBJ) | $(LIB_DIR)
 	ar rcs $(LIBRARY) $(OBJ_DIR)/*.o

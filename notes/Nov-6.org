@@ -1,0 +1,25 @@
+* Power Method
+v_{k+1} = A v_k, k = 0,1,2
+
+** Properties
+1. \frac{A v_k}{||v_k||} \rightarrow v_1
+2. \frac{v_k^T A v_k}{v_k^T v_k} \rightarrow \lambda_1
+3. If \lambda is a n eigenvalue of A, then \frac{1}{\lambda} is an eigenvalue of A^-1
+4. Av = \lambda v
+   Av - \mu v = (\lambda-\mu)v = (A - \mu I)v
+5. If \lambda is an eigenvalue of A, then \lambda - \mu is an eigenvalue of A \cdot \mu I
+
+** Shifting Eigenvalues
+1. Partition [\lambda_n, \lambda_1]
+
+
+* Lanczos Algorithm
+
+#+BEGIN_SRC c
+  for (int i = 0; i < n; i++) {
+    sum = a0;
+    v_dot_v(a[i], x);
+
+    b[i] = sum;
+  }
+#+END_SRC

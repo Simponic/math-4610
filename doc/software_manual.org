@@ -27,7 +27,7 @@ MacOS as well as ~x86~ Arch Linux.
 2. ~make~
    
 Then, as of homework 5, the testing routines are provided in ~test~ and utilize the
-utest microlibrary. They compile to a binary in ~./dist/lizfcm.test~.
+~utest~ "micro"library. They compile to a binary in ~./dist/lizfcm.test~.
 
 Execution of the Makefile will perform compilation of individual routines.
 
@@ -39,7 +39,7 @@ produce an object file:
   gcc -Iinc/ -lm -Wall -c src/<the_routine>.c -o build/<the_routine>.o
 \end{verbatim}
 
-Which is then bundled into a static library in ~lib/lizfcm.a~ which can be linked
+Which is then bundled into a static library in ~lib/lizfcm.a~ and can be linked
 in the standard method.
 
 * The LIZFCM API

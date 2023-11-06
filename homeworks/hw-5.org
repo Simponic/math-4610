@@ -19,7 +19,7 @@ Unless the following are met, the resulting solution will be garbage.
 1. The matrix $U$ must be not be singular.
 2. $U$ must be square (or it will fail the ~assert~).
 3. The system created by $Ux = b$ must be consistent.
-4. $U$ is in (obviously) upper-triangular form.
+4. $U$ is (quite obviously) in upper-triangular form.
 
 Thus, the actual calculation performing the $LU$ decomposition
 (in ~lu_decomp~) does a sanity

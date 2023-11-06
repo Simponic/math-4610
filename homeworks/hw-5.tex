@@ -1,4 +1,4 @@
-% Created 2023-10-30 Mon 19:05
+% Created 2023-11-01 Wed 20:49
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -29,7 +29,7 @@
 \setlength\parindent{0pt}
 
 \section{Question One}
-\label{sec:org88abf18}
+\label{sec:org4e80298}
 See LIZFCM \(\rightarrow\) Matrix Routines \(\rightarrow\) \texttt{lu decomp} \& \texttt{bsubst}.
 
 The test \texttt{UTEST(matrix, lu\_decomp)} is a unit test for the \texttt{lu\_decomp} routine,
@@ -39,14 +39,14 @@ and \texttt{UTEST(matrix, bsubst)} verifies back substitution on an upper triang
 Both can be found in \texttt{tests/matrix.t.c}.
 
 \section{Question Two}
-\label{sec:org098a7f1}
+\label{sec:orga73d05c}
 Unless the following are met, the resulting solution will be garbage.
 
 \begin{enumerate}
 \item The matrix \(U\) must be not be singular.
 \item \(U\) must be square (or it will fail the \texttt{assert}).
 \item The system created by \(Ux = b\) must be consistent.
-\item \(U\) is in (obviously) upper-triangular form.
+\item \(U\) is (quite obviously) in upper-triangular form.
 \end{enumerate}
 
 Thus, the actual calculation performing the \(LU\) decomposition
@@ -55,41 +55,41 @@ check for 1-3 will fail an assert, should a point along the diagonal (pivot) be
 zero, or the matrix be non-factorable.
 
 \section{Question Three}
-\label{sec:org40d5983}
+\label{sec:org35163c5}
 See LIZFCM \(\rightarrow\) Matrix Routines \(\rightarrow\) \texttt{fsubst}.
 
 \texttt{UTEST(matrix, fsubst)} verifies forward substitution on a lower triangular 3 \texttimes{} 3
 matrix with a known solution that can be verified manually.
 
 \section{Question Four}
-\label{sec:orgf7d23bb}
+\label{sec:org79d9061}
 
 See LIZFCM \(\rightarrow\) Matrix Routines \(\rightarrow\) \texttt{gaussian\_elimination} and \texttt{solve\_gaussian\_elimination}.
 
 \section{Question Five}
-\label{sec:org54e966c}
+\label{sec:orgc6ac464}
 See LIZFCM \(\rightarrow\) Matrix Routines \(\rightarrow\) \texttt{m\_dot\_v}, and the \texttt{UTEST(matrix, m\_dot\_v)} in
 \texttt{tests/matrix.t.c}.
 
 \section{Question Six}
-\label{sec:org413b527}
+\label{sec:org66fedab}
 See \texttt{UTEST(matrix, solve\_gaussian\_elimination)} in \texttt{tests/matrix.t.c}, which generates a diagonally dominant 10 \texttimes{} 10 matrix
 and shows that the solution is consistent with the initial matrix, according to the steps given. Then,
 we do a dot product between each row of the diagonally dominant matrix and the solution vector to ensure
 it is near equivalent to the input vector.
 
 \section{Question Seven}
-\label{sec:orgd3d7443}
+\label{sec:org6897ff2}
 See \texttt{UTEST(matrix, solve\_matrix\_lu\_bsubst)} which does the same test in Question Six with the solution according to
 \texttt{solve\_matrix\_lu\_bsubst} as shown in the Software Manual.
 
 \section{Question Eight}
-\label{sec:orgf8ac9bf}
+\label{sec:org5d529dd}
 No, since the time complexity for Gaussian Elimination is always less than that of the LU factorization solution by \(O(n^2)\) operations
 (in LU factorization we perform both backwards and forwards substitutions proceeding the LU decomp, in Gaussian Elimination we only need
 back substitution).
 
 \section{Question Nine, Ten}
-\label{sec:orgb270171}
+\label{sec:org0fb8e09}
 See LIZFCM Software manual and shared library in \texttt{dist} after compiling.
 \end{document}

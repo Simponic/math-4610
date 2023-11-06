@@ -1,0 +1,62 @@
+* eigenvalues \rightarrow power method
+
+we iterate on the x_{k+1} = A x_k
+
+y = Av_0
+v_1 = \frac{1}{|| y ||} (y)
+\lambda_0 = v_0^T A v_0 = v_0^T y
+
+Find the largest eigenvalue;
+
+#+BEGIN_SRC c
+  while (error > tol && iter < max_iter) {
+    v_1 = (1 / magnitude(y)) * y;
+    w = m_dot_v(a, v_1);
+    lambda_1 = v_dot_v(transpose(v_1), w);
+    error = abs(lambda_1 - lambda_0);
+    iter++;
+    lambda_0 = lambda_1;
+    y = v_1;
+  }
+
+  return [lambda_1, error];
+#+END_SRC
+
+Find the smallest eigenvalue:
+
+** We know:
+If \lambda_1 is the largest eigenvalue of $A$ then \frac{1}{\lambda_1} is the smallest eigenvalue of $A^{-1}$.
+
+If \lambda_n is the smallest eigenvalue of $A$ then \frac{1}{\lambda_n} is the largest eigenvalue of $A^{-1}$.
+*** However, calculating $A^{-1}$ is inefficient
+So, transform $w = A^{-1} v_1 \Rightarrow$ Solve $Aw = v_1$ with LU or GE (line 3 of above snippet).
+
+And, transform $y = A^{-1} v_0 \Rightarrow$ Solve $Ay = v_0$ with LU or GE.
+
+** Conclusions
+
+We have the means to compute the approximations of \lambda_1 and \lambda_n.
+
+(\lambda_1 \rightarrow power method)
+
+(\lambda_n \rightarrow inverse power method)
+
+* Eigenvalue Shifting
+
+If (\lambda, v) is an eigen pair, (v \neq 0)
+
+Av = \lambdav
+
+Thus for any \mu \in R
+
+(Av - \mu I v) = (A - \mu I)v = \lambda v - \mu I v
+             = (\lambda - \mu)v
+             \Rightarrow \lambda - \mu is an eigenvalue of (A - \mu I)
+
+(A - \mu I)v = (\lambda - \mu)v
+
+Idea is to choose \mu close to our eigenvalue. We can then inverse iterate to
+construct an approximation of \lambda - \mu and then add \mu back to get \lambda.
+
+v_0 = a_1 v_1 + a_2 v_2 + \cdots + a_n v_n
+A v_0 = a_1 (\lambda_1 v_1) + \cdots

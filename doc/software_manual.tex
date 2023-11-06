@@ -1,4 +1,4 @@
-% Created 2023-10-30 Mon 09:44
+% Created 2023-11-01 Wed 20:52
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,7 +31,7 @@
 \setlength\parindent{0pt}
 
 \section{Design}
-\label{sec:org7f9c526}
+\label{sec:org9458aa0}
 The LIZFCM static library (at \url{https://github.com/Simponic/math-4610}) is a successor to my
 attempt at writing codes for the Fundamentals of Computational Mathematics course in Common
 Lisp, but the effort required to meet the requirement of creating a static library became
@@ -44,13 +44,14 @@ the C programming language. I have a couple tenets for its design:
 \begin{itemize}
 \item Implementations of routines should all be done immutably in respect to arguments.
 \item Functional programming is good (it's\ldots{} rough in C though).
-\item Routines are separated into "module" c files, and not individual files per function.
+\item Routines are separated into "modules" that follow a form of separation of concerns
+in files, and not individual files per function.
 \end{itemize}
 
 \section{Compilation}
-\label{sec:org911a41e}
-A provided \texttt{Makefile} is added for convencience. It has been tested on an M1 machine running MacOS as
-well as Arch Linux.
+\label{sec:orge0bab70}
+A provided \texttt{Makefile} is added for convencience. It has been tested on an \texttt{arm}-based M1 machine running
+MacOS as well as \texttt{x86} Arch Linux.
 
 \begin{enumerate}
 \item \texttt{cd} into the root of the repo
@@ -58,7 +59,7 @@ well as Arch Linux.
 \end{enumerate}
 
 Then, as of homework 5, the testing routines are provided in \texttt{test} and utilize the
-utest microlibrary. They compile to a binary in \texttt{./dist/lizfcm.test}.
+\texttt{utest} "micro"library. They compile to a binary in \texttt{./dist/lizfcm.test}.
 
 Execution of the Makefile will perform compilation of individual routines.
 
@@ -74,11 +75,11 @@ Which is then bundled into a static library in \texttt{lib/lizfcm.a} which can b
 in the standard method.
 
 \section{The LIZFCM API}
-\label{sec:orgd74cd2d}
+\label{sec:org91f4707}
 \subsection{Simple Routines}
-\label{sec:org66bba13}
+\label{sec:orgc8c57e4}
 \subsubsection{\texttt{smaceps}}
-\label{sec:orgeae9531}
+\label{sec:orgfeb6ef6}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{smaceps}
@@ -104,7 +105,7 @@ float smaceps() {
 \end{verbatim}
 
 \subsubsection{\texttt{dmaceps}}
-\label{sec:org237c904}
+\label{sec:orgb3dc0f2}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{dmaceps}
@@ -130,9 +131,9 @@ double dmaceps() {
 \end{verbatim}
 
 \subsection{Derivative Routines}
-\label{sec:org9cf9027}
+\label{sec:orge88d677}
 \subsubsection{\texttt{central\_derivative\_at}}
-\label{sec:org1fcd333}
+\label{sec:org32a8384}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{central\_derivative\_at}
@@ -163,7 +164,7 @@ double central_derivative_at(double (*f)(double), double a, double h) {
 \end{verbatim}
 
 \subsubsection{\texttt{forward\_derivative\_at}}
-\label{sec:org6a768fc}
+\label{sec:orgb6fdb9a}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{forward\_derivative\_at}
@@ -194,7 +195,7 @@ double forward_derivative_at(double (*f)(double), double a, double h) {
 \end{verbatim}
 
 \subsubsection{\texttt{backward\_derivative\_at}}
-\label{sec:org610ce76}
+\label{sec:org8b6070e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{backward\_derivative\_at}
@@ -225,9 +226,9 @@ double backward_derivative_at(double (*f)(double), double a, double h) {
 \end{verbatim}
 
 \subsection{Vector Routines}
-\label{sec:orgfd176e6}
+\label{sec:org161e049}
 \subsubsection{Vector Arithmetic: \texttt{add\_v, minus\_v}}
-\label{sec:org2dbc55f}
+\label{sec:org938756a}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{add\_v}, \texttt{minus\_v}
@@ -258,7 +259,7 @@ Array_double *minus_v(Array_double *v1, Array_double *v2) {
 \end{verbatim}
 
 \subsubsection{Norms: \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}}
-\label{sec:org53a2ffc}
+\label{sec:org53e3d42}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}
@@ -292,7 +293,7 @@ double linf_norm(Array_double *v) {
 \end{verbatim}
 
 \subsubsection{\texttt{vector\_distance}}
-\label{sec:org1fb3f8c}
+\label{sec:org31d6d43}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{vector\_distance}
@@ -313,7 +314,7 @@ double vector_distance(Array_double *v1, Array_double *v2,
 \end{verbatim}
 
 \subsubsection{Distances: \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}}
-\label{sec:org4a25a94}
+\label{sec:org3c2cede}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}
@@ -339,7 +340,7 @@ double linf_distance(Array_double *v1, Array_double *v2) {
 \end{verbatim}
 
 \subsubsection{\texttt{sum\_v}}
-\label{sec:org035a547}
+\label{sec:orgde8ccf4}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{sum\_v}
@@ -359,7 +360,7 @@ double sum_v(Array_double *v) {
 
 
 \subsubsection{\texttt{scale\_v}}
-\label{sec:org12b0853}
+\label{sec:orgb6465fa}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{scale\_v}
@@ -378,7 +379,7 @@ Array_double *scale_v(Array_double *v, double m) {
 \end{verbatim}
 
 \subsubsection{\texttt{free\_vector}}
-\label{sec:org70ba90c}
+\label{sec:org38c1352}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{free\_vector}
@@ -395,8 +396,47 @@ void free_vector(Array_double *v) {
 }
 \end{verbatim}
 
+\subsubsection{\texttt{add\_element}}
+\label{sec:org9fa4fc9}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{add\_element}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double}
+\item Output: a new \texttt{Array\_double} with element \texttt{x} appended.
+\end{itemize}
+
+\begin{verbatim}
+Array_double *add_element(Array_double *v, double x) {
+  Array_double *pushed = InitArrayWithSize(double, v->size + 1, 0.0);
+  for (size_t i = 0; i < v->size; ++i)
+    pushed->data[i] = v->data[i];
+  pushed->data[v->size] = x;
+  return pushed;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{slice\_element}}
+\label{sec:orga743fd5}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{slice\_element}
+\item Location: \texttt{src/vector.c}
+\item Input: a pointer to an \texttt{Array\_double}
+\item Output: a new \texttt{Array\_double} with element \texttt{x} sliced.
+\end{itemize}
+
+\begin{verbatim}
+Array_double *slice_element(Array_double *v, size_t x) {
+  Array_double *sliced = InitArrayWithSize(double, v->size - 1, 0.0);
+  for (size_t i = 0; i < v->size - 1; ++i)
+    sliced->data[i] = i >= x ? v->data[i + 1] : v->data[i];
+  return sliced;
+}
+\end{verbatim}
+
 \subsubsection{\texttt{copy\_vector}}
-\label{sec:org57afc74}
+\label{sec:org8918aa7}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{copy\_vector}
@@ -416,7 +456,7 @@ Array_double *copy_vector(Array_double *v) {
 \end{verbatim}
 
 \subsubsection{\texttt{format\_vector\_into}}
-\label{sec:orgc346c3c}
+\label{sec:org744df1b}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{format\_vector\_into}
@@ -446,9 +486,9 @@ void format_vector_into(Array_double *v, char *s) {
 \end{verbatim}
 
 \subsection{Matrix Routines}
-\label{sec:org3b053ab}
+\label{sec:orge1c8a5a}
 \subsubsection{\texttt{lu\_decomp}}
-\label{sec:org5553968}
+\label{sec:org19cc6a1}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{lu\_decomp}
@@ -457,7 +497,7 @@ void format_vector_into(Array_double *v, char *s) {
 matrix \(L\), \(U\), respectively such that \(LU = m\).
 \item Output: a pointer to the location in memory in which two \texttt{Matrix\_double}'s reside: the first
 representing \(L\), the second, \(U\).
-\item Errors: Exits and throws a status code of \texttt{-1} when encountering a matrix that cannot be
+\item Errors: Fails assertions when encountering a matrix that cannot be
 decomposed
 \end{itemize}
 
@@ -468,15 +508,14 @@ Matrix_double **lu_decomp(Matrix_double *m) {
   Matrix_double *u = copy_matrix(m);
   Matrix_double *l_empt = InitMatrixWithSize(double, m->rows, m->cols, 0.0);
   Matrix_double *l = put_identity_diagonal(l_empt);
-  free(l_empt);
-
+  free_matrix(l_empt);
 
   Matrix_double **u_l = malloc(sizeof(Matrix_double *) * 2);
 
   for (size_t y = 0; y < m->rows; y++) {
     if (u->data[y]->data[y] == 0) {
       printf("ERROR: a pivot is zero in given matrix\n");
-      exit(-1);
+      assert(false);
     }
   }
 
@@ -487,7 +526,7 @@ Matrix_double **lu_decomp(Matrix_double *m) {
 
         if (denom == 0) {
           printf("ERROR: non-factorable matrix\n");
-          exit(-1);
+          assert(false);
         }
 
         double factor = -(u->data[y]->data[x] / denom);
@@ -509,7 +548,7 @@ Matrix_double **lu_decomp(Matrix_double *m) {
 }
 \end{verbatim}
 \subsubsection{\texttt{bsubst}}
-\label{sec:org253efdc}
+\label{sec:org786580f}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{bsubst}
@@ -534,7 +573,7 @@ Array_double *bsubst(Matrix_double *u, Array_double *b) {
 }
 \end{verbatim}
 \subsubsection{\texttt{fsubst}}
-\label{sec:orge0c7bc6}
+\label{sec:org1d422c6}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{fsubst}
@@ -561,8 +600,8 @@ Array_double *fsubst(Matrix_double *l, Array_double *b) {
 }
 \end{verbatim}
 
-\subsubsection{\texttt{solve\_matrix}}
-\label{sec:orgbcd445a}
+\subsubsection{\texttt{solve\_matrix\_lu\_bsubst}}
+\label{sec:orgbf1dbcb}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -577,7 +616,7 @@ Here we make use of forward substitution to first solve \(Ly = b\) given \(L\) a
 Then, \(LUx = b\), thus \(x\) is a solution.
 
 \begin{verbatim}
-Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
+Array_double *solve_matrix_lu_bsubst(Matrix_double *m, Array_double *b) {
   assert(b->size == m->rows);
   assert(m->rows == m->cols);
 
@@ -592,13 +631,105 @@ Array_double *solve_matrix(Matrix_double *m, Array_double *b) {
 
   free_matrix(u);
   free_matrix(l);
+  free(u_l);
 
   return x;
 }
 \end{verbatim}
 
+\subsubsection{\texttt{gaussian\_elimination}}
+\label{sec:orgc3ceb7b}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} \(m\)
+\item Output: a pointer to a copy of \(m\) in reduced echelon form
+\end{itemize}
+
+This works by finding the row with a maximum value in the column \(k\). Then, it uses that as a pivot, and
+applying reduction to all other rows. The general idea is available at \url{https://en.wikipedia.org/wiki/Gaussian\_elimination}.
+
+\begin{verbatim}
+Matrix_double *gaussian_elimination(Matrix_double *m) {
+  uint64_t h = 0;
+  uint64_t k = 0;
+
+  Matrix_double *m_cp = copy_matrix(m);
+
+  while (h < m_cp->rows && k < m_cp->cols) {
+    uint64_t max_row = 0;
+    double total_max = 0.0;
+
+    for (uint64_t row = h; row < m_cp->rows; row++) {
+      double this_max = c_max(fabs(m_cp->data[row]->data[k]), total_max);
+      if (c_max(this_max, total_max) == this_max) {
+        max_row = row;
+      }
+    }
+
+    if (max_row == 0) {
+      k++;
+      continue;
+    }
+
+    Array_double *swp = m_cp->data[max_row];
+    m_cp->data[max_row] = m_cp->data[h];
+    m_cp->data[h] = swp;
+
+    for (uint64_t row = h + 1; row < m_cp->rows; row++) {
+      double factor = m_cp->data[row]->data[k] / m_cp->data[h]->data[k];
+      m_cp->data[row]->data[k] = 0.0;
+
+      for (uint64_t col = k + 1; col < m_cp->cols; col++) {
+        m_cp->data[row]->data[col] -= m_cp->data[h]->data[col] * factor;
+      }
+    }
+
+    h++;
+    k++;
+  }
+
+  return m_cp;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{solve\_matrix\_gaussian}}
+\label{sec:orgb8fc210}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} \(m\) and a target \texttt{Array\_double} \(b\)
+\item Output: a pointer to a vector \(x\) being the solution to the equation \(mx = b\)
+\end{itemize}
+
+We first perform \texttt{gaussian\_elimination} after augmenting \(m\) and \(b\). Then, as \(m\) is in reduced echelon form, it's an upper
+triangular matrix, so we can perform back substitution to compute \(x\).
+
+\begin{verbatim}
+Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b) {
+  assert(b->size == m->rows);
+  assert(m->rows == m->cols);
+
+  Matrix_double *m_augment_b = add_column(m, b);
+  Matrix_double *eliminated = gaussian_elimination(m_augment_b);
+
+  Array_double *b_gauss = col_v(eliminated, m->cols);
+  Matrix_double *u = slice_column(eliminated, m->rows);
+
+  Array_double *solution = bsubst(u, b_gauss);
+
+  free_matrix(m_augment_b);
+  free_matrix(eliminated);
+  free_matrix(u);
+  free_vector(b_gauss);
+
+  return solution;
+}
+\end{verbatim}
+
+
 \subsubsection{\texttt{m\_dot\_v}}
-\label{sec:orga9b1f68}
+\label{sec:org304f5e5}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -620,7 +751,7 @@ Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
 \end{verbatim}
 
 \subsubsection{\texttt{put\_identity\_diagonal}}
-\label{sec:org33ead5e}
+\label{sec:orga145f39}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -638,8 +769,56 @@ Matrix_double *put_identity_diagonal(Matrix_double *m) {
 }
 \end{verbatim}
 
+\subsubsection{\texttt{slice\_column}}
+\label{sec:org1ea6d1a}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double}
+\item Output: a pointer to a copy of the given \texttt{Matrix\_double} with column at \texttt{x} sliced
+\end{itemize}
+
+\begin{verbatim}
+Matrix_double *slice_column(Matrix_double *m, size_t x) {
+  Matrix_double *sliced = copy_matrix(m);
+
+  for (size_t row = 0; row < m->rows; row++) {
+    Array_double *old_row = sliced->data[row];
+    sliced->data[row] = slice_element(old_row, x);
+    free_vector(old_row);
+  }
+  sliced->cols--;
+
+  return sliced;
+}
+\end{verbatim}
+
+\subsubsection{\texttt{add\_column}}
+\label{sec:org733cc61}
+\begin{itemize}
+\item Author: Elizabet Hunt
+\item Location: \texttt{src/matrix.c}
+\item Input: a pointer to a \texttt{Matrix\_double} and a new vector representing the appended column \texttt{x}
+\item Output: a pointer to a copy of the given \texttt{Matrix\_double} with a new column \texttt{x}
+\end{itemize}
+
+\begin{verbatim}
+Matrix_double *add_column(Matrix_double *m, Array_double *v) {
+  Matrix_double *pushed = copy_matrix(m);
+
+  for (size_t row = 0; row < m->rows; row++) {
+    Array_double *old_row = pushed->data[row];
+    pushed->data[row] = add_element(old_row, v->data[row]);
+    free_vector(old_row);
+  }
+
+  pushed->cols++;
+  return pushed;
+}
+\end{verbatim}
+
 \subsubsection{\texttt{copy\_matrix}}
-\label{sec:org34b3f5b}
+\label{sec:orge8936ce}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -659,7 +838,7 @@ Matrix_double *copy_matrix(Matrix_double *m) {
 \end{verbatim}
 
 \subsubsection{\texttt{free\_matrix}}
-\label{sec:org9c91101}
+\label{sec:orgf7b674e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -678,7 +857,7 @@ void free_matrix(Matrix_double *m) {
 \end{verbatim}
 
 \subsubsection{\texttt{format\_matrix\_into}}
-\label{sec:org51f3e27}
+\label{sec:org22902bd}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{format\_matrix\_into}
@@ -705,9 +884,9 @@ void format_matrix_into(Matrix_double *m, char *s) {
 }
 \end{verbatim}
 \subsection{Root Finding Methods}
-\label{sec:org0e83d47}
+\label{sec:org6c22e6c}
 \subsubsection{\texttt{find\_ivt\_range}}
-\label{sec:org3e4e34e}
+\label{sec:org43ba5e5}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{find\_ivt\_range}
@@ -737,7 +916,7 @@ double *find_ivt_range(double (*f)(double), double start_x, double delta,
 }
 \end{verbatim}
 \subsubsection{\texttt{bisect\_find\_root}}
-\label{sec:org48f0967}
+\label{sec:orgf8a3f0e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{bisect\_find\_root}
@@ -765,7 +944,7 @@ double bisect_find_root(double (*f)(double), double a, double b,
 }
 \end{verbatim}
 \subsubsection{\texttt{bisect\_find\_root\_with\_error\_assumption}}
-\label{sec:org15e3c2d}
+\label{sec:orgeb72b17}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{bisect\_find\_root\_with\_error\_assumption}
@@ -789,9 +968,9 @@ double bisect_find_root_with_error_assumption(double (*f)(double), double a,
 \end{verbatim}
 
 \subsection{Linear Routines}
-\label{sec:org98cb54b}
+\label{sec:org4e14ee5}
 \subsubsection{\texttt{least\_squares\_lin\_reg}}
-\label{sec:org0c0c5d7}
+\label{sec:orge0ed136}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{least\_squares\_lin\_reg}
@@ -821,12 +1000,12 @@ Line *least_squares_lin_reg(Array_double *x, Array_double *y) {
 }
 \end{verbatim}
 \subsection{Appendix / Miscellaneous}
-\label{sec:orge34af18}
+\label{sec:org0130d70}
 \subsubsection{Data Types}
-\label{sec:org0f2f877}
+\label{sec:org8aa1c01}
 \begin{enumerate}
 \item \texttt{Line}
-\label{sec:org3f27166}
+\label{sec:org596b0e7}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/types.h}
@@ -839,7 +1018,7 @@ typedef struct Line {
 } Line;
 \end{verbatim}
 \item The \texttt{Array\_<type>} and \texttt{Matrix\_<type>}
-\label{sec:org83fc1f3}
+\label{sec:org9d1c7c3}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/types.h}
@@ -871,10 +1050,10 @@ typedef struct {
 \end{enumerate}
 
 \subsubsection{Macros}
-\label{sec:org2bf9bf0}
+\label{sec:orgb835bfa}
 \begin{enumerate}
 \item \texttt{c\_max} and \texttt{c\_min}
-\label{sec:orgcaa569e}
+\label{sec:org9ca763b}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -888,7 +1067,7 @@ typedef struct {
 \end{verbatim}
 
 \item \texttt{InitArray}
-\label{sec:org5805999}
+\label{sec:org3454dab}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -909,7 +1088,7 @@ typedef struct {
 \end{verbatim}
 
 \item \texttt{InitArrayWithSize}
-\label{sec:org264d6b7}
+\label{sec:orga4ec165}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -930,7 +1109,7 @@ typedef struct {
 \end{verbatim}
 
 \item \texttt{InitMatrixWithSize}
-\label{sec:org310d41a}
+\label{sec:org0748f30}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}

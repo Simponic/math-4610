@@ -50,12 +50,26 @@ extern int matrix_equal(Matrix_double *a, Matrix_double *b);
 
 extern Line *least_squares_lin_reg(Array_double *x, Array_double *y);
 
-extern double *find_ivt_range(double (*f)(double), double start_x, double delta,
-                              size_t max_steps);
-extern double bisect_find_root(double (*f)(double), double a, double b,
-                               double tolerance, size_t max_iterations);
+extern Array_double *find_ivt_range(double (*f)(double), double start_x,
+                                    double delta, size_t max_steps);
+extern Array_double *bisect_find_root(double (*f)(double), double a, double b,
+                                      double tolerance, size_t max_iterations);
 extern double bisect_find_root_with_error_assumption(double (*f)(double),
                                                      double a, double b,
                                                      double tolerance);
-
+extern double fixed_point_iteration_method(double (*f)(double),
+                                           double (*g)(double), double x_0,
+                                           double tolerance,
+                                           size_t max_iterations);
+extern double fixed_point_newton_method(double (*f)(double),
+                                        double (*fprime)(double), double x_0,
+                                        double tolerance,
+                                        size_t max_iterations);
+extern double fixed_point_secant_method(double (*f)(double), double x_0,
+                                        double x_1, double tolerance,
+                                        size_t max_iterations);
+extern double fixed_point_secant_bisection_method(double (*f)(double),
+                                                  double x_0, double x_1,
+                                                  double tolerance,
+                                                  size_t max_iterations);
 #endif // LIZFCM_H

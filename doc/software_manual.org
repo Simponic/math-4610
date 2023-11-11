@@ -1,4 +1,4 @@
-#+TITLE: LIZFCM Software Manual (v0.2)
+#+TITLE: LIZFCM Software Manual (v0.3)
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}
@@ -110,8 +110,8 @@ double central_derivative_at(double (*f)(double), double a, double h) {
   double x2 = a + h;
   double x1 = a - h;
 
-  double y2 = (*f)(x2);
-  double y1 = (*f)(x1);
+  double y2 = f(x2);
+  double y1 = f(x1);
 
   return (y2 - y1) / (x2 - x1);
 }
@@ -136,8 +136,8 @@ double forward_derivative_at(double (*f)(double), double a, double h) {
   double x2 = a + h;
   double x1 = a;
 
-  double y2 = (*f)(x2);
-  double y1 = (*f)(x1);
+  double y2 = f(x2);
+  double y1 = f(x1);
 
   return (y2 - y1) / (x2 - x1);
 }
@@ -162,8 +162,8 @@ double backward_derivative_at(double (*f)(double), double a, double h) {
   double x2 = a;
   double x1 = a - h;
 
-  double y2 = (*f)(x2);
-  double y1 = (*f)(x1);
+  double y2 = f(x2);
+  double y1 = f(x1);
 
   return (y2 - y1) / (x2 - x1);
 }
@@ -761,46 +761,51 @@ void format_matrix_into(Matrix_double *m, char *s) {
 + Input: a pointer to a oneary function taking a double and producing a double, the beginning point
   in $R$ to search for a range, a ~delta~ step that is taken, and a ~max_steps~ number of maximum
   iterations to perform.
-+ Output: a pair of ~double~'s representing a closed closed interval ~[beginning, end]~
++ Output: a pair of ~double~'s in an ~Array_double~ representing a closed closed interval ~[beginning, end]~
 
 #+BEGIN_SRC c
-double *find_ivt_range(double (*f)(double), double start_x, double delta,
-                       size_t max_steps) {
-  double *range = malloc(sizeof(double) * 2);
-
+// f is well defined at start_x + delta*n for all n on the integer range [0,
+// max_iterations]
+Array_double *find_ivt_range(double (*f)(double), double start_x, double delta,
+                             size_t max_iterations) {
   double a = start_x;
 
-  while (f(a) * f(start_x) >= 0 && max_steps-- > 0)
+  while (f(a) * f(a + delta) >= 0 && max_iterations > 0) {
+    max_iterations--;
     a += delta;
+  }
 
-  if (max_steps == 0 && f(a) * f(start_x) > 0)
+  double end = a + delta;
+  double begin = a - delta;
+
+  if (max_iterations == 0 && f(begin) * f(end) >= 0)
     return NULL;
-
-  range[0] = start_x;
-  range[1] = a + delta;
-  return range;
+  return InitArray(double, {begin, end});
 }
 #+END_SRC
 *** ~bisect_find_root~
 + Author: Elizabeth Hunt
 + Name(s): ~bisect_find_root~
 + Input: a one-ary function taking a double and producing a double, a closed interval represented
-  by ~a~ and ~b~: ~[a, b]~, a ~tolerance~ at which we return the estimated root, and a
-  ~max_iterations~ to break us out of a loop if we can never reach the ~tolerance~
-+ Output: a ~double~ representing the estimated root
+  by ~a~ and ~b~: ~[a, b]~, a ~tolerance~ at which we return the estimated root once $b-a < \text{tolerance}$, and a
+  ~max_iterations~ to break us out of a loop if we can never reach the ~tolerance~.
++ Output: a vector of size of 3, ~double~'s representing first the range ~[a,b]~ and then the midpoint,
+  ~c~ of the range.
 + Description: recursively uses binary search to split the interval until we reach ~tolerance~. We
   also assume the function ~f~ is continuous on ~[a, b]~.
 
 #+BEGIN_SRC c
-double bisect_find_root(double (*f)(double), double a, double b,
-                        double tolerance, size_t max_iterations) {
+// f is continuous on [a, b]
+Array_double *bisect_find_root(double (*f)(double), double a, double b,
+                               double tolerance, size_t max_iterations) {
   assert(a <= b);
   // guarantee there's a root somewhere between a and b by IVT
   assert(f(a) * f(b) < 0);
 
   double c = (1.0 / 2) * (a + b);
   if (b - a < tolerance || max_iterations == 0)
-    return c;
+    return InitArray(double, {a, b, c});
+
   if (f(a) * f(c) < 0)
     return bisect_find_root(f, a, c, tolerance, max_iterations - 1);
   return bisect_find_root(f, c, b, tolerance, max_iterations - 1);
@@ -810,7 +815,7 @@ double bisect_find_root(double (*f)(double), double a, double b,
 + Author: Elizabeth Hunt
 + Name: ~bisect_find_root_with_error_assumption~
 + Input: a one-ary function taking a double and producing a double, a closed interval represented
-  by ~a~ and ~b~: ~[a, b]~, and a ~tolerance~ at which we return the estimated root
+  by ~a~ and ~b~: ~[a, b]~, and a ~tolerance~ equivalent to the above definition in ~bisect_find_root~
 + Output: a ~double~ representing the estimated root
 + Description: using the bisection method we know that $e_k \le (\frac{1}{2})^k (b_0 - a_0)$. So we can
   calculate $k$ at the worst possible case (that the error is exactly the tolerance) to be
@@ -823,7 +828,140 @@ double bisect_find_root_with_error_assumption(double (*f)(double), double a,
 
   uint64_t max_iterations =
       (uint64_t)ceil((log(tolerance) - log(b - a)) / log(1 / 2.0));
-  return bisect_find_root(f, a, b, tolerance, max_iterations);
+
+  Array_double *a_b_root = bisect_find_root(f, a, b, tolerance, max_iterations);
+  double root = a_b_root->data[2];
+  free_vector(a_b_root);
+
+  return root;
+}
+#+END_SRC
+
+*** ~fixed_point_iteration_method~
++ Author: Elizabeth Hunt
++ Name: ~fixed_point_iteration_method~
++ Location: ~src/roots.c~
++ Input: a pointer to a oneary function $f$ taking a double and producing a double of which we are
+  trying to find a root, a guess $x_0$, and a function $g$ of the same signature of $f$ at which we
+  "step" our guesses according to the fixed point iteration method: $x_k = g(x_{k-1})$. Additionally, a
+  ~max_iterations~ representing the maximum number of "steps" to take before arriving at our
+  approximation and a ~tolerance~ to return our root if it becomes within [0 - tolerance, 0 + tolerance].
++ Assumptions: $g(x)$ must be a function such that at the point $x^*$ (the found root) the derivative
+  $|g'(x^*)| \lt 1$
++ Output: a double representing the found approximate root $\approx x^*$.
+
+#+BEGIN_SRC c
+double fixed_point_iteration_method(double (*f)(double), double (*g)(double),
+                                    double x_0, double tolerance,
+                                    size_t max_iterations) {
+  if (max_iterations <= 0)
+    return x_0;
+
+  double root = g(x_0);
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  return fixed_point_iteration_method(f, g, root, tolerance,
+                                      max_iterations - 1);
+}
+#+END_SRC
+
+*** ~fixed_point_newton_method~
++ Author: Elizabeth Hunt
++ Name: ~fixed_point_newton_method~
++ Location: ~src/roots.c~
++ Input: a pointer to a oneary function $f$ taking a double and producing a double of which we are
+  trying to find a root and another pointer to a function fprime of the same signature, a guess $x_0$,
+  and a ~max_iterations~ and ~tolerance~ as defined in the above method are required inputs.
++ Description: continually computes elements in the sequence $x_n = x_{n-1} - \frac{f(x_{n-1})}{f'p(x_{n-1})}$
++ Output: a double representing the found approximate root $\approx x^*$ recursively applied to the sequence
+  given
+#+BEGIN_SRC c
+double fixed_point_newton_method(double (*f)(double), double (*fprime)(double),
+                                 double x_0, double tolerance,
+                                 size_t max_iterations) {
+  if (max_iterations <= 0)
+    return x_0;
+
+  double root = x_0 - f(x_0) / fprime(x_0);
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  return fixed_point_newton_method(f, fprime, root, tolerance,
+                                   max_iterations - 1);
+}
+#+END_SRC
+
+*** ~fixed_point_secant_method~
++ Author: Elizabeth Hunt
++ Name: ~fixed_point_secant_method~
++ Location: ~src/roots.c~
++ Input: a pointer to a oneary function $f$ taking a double and producing a double of which we are
+  trying to find a root, a guess $x_0$ and $x_1$ in which a root lies between $[x_0, x_1]$; applying the
+  sequence $x_n = x_{n-1} - f(x_{n-1}) \frac{x_{n-1} - x_{n-2}}{f(x_{n-1}) - f(x_{n-2})}$.
+  Additionally, a ~max_iterations~ and ~tolerance~ as defined in the above method are required
+  inputs.
++ Output: a double representing the found approximate root $\approx x^*$ recursively applied to the sequence.
+#+BEGIN_SRC c
+double fixed_point_secant_method(double (*f)(double), double x_0, double x_1,
+                                 double tolerance, size_t max_iterations) {
+  if (max_iterations == 0)
+    return x_1;
+
+  double root = x_1 - f(x_1) * ((x_1 - x_0) / (f(x_1) - f(x_0)));
+
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  return fixed_point_secant_method(f, x_1, root, tolerance, max_iterations - 1);
+}
+#+END_SRC
+*** ~fixed_point_secant_bisection_method~
++ Author: Elizabeth Hunt
++ Name: ~fixed_point_secant_method~
++ Location: ~src/roots.c~
++ Input: a pointer to a oneary function $f$ taking a double and producing a double of which we are
+  trying to find a root, a guess $x_0$, and a $x_1$ of which we define our first interval $[x_0, x_1]$.
+  Then, we perform a single iteration of the ~fixed_point_secant_method~ on this interval; if it
+  produces a root outside, we refresh the interval and root respectively with the given
+  ~bisect_find_root~ method. Additionally, a ~max_iterations~ and ~tolerance~ as defined in the above method are required
+  inputs.
++ Output: a double representing the found approximate root $\approx x^*$ continually applied with the
+  constraints defined.
+
+#+BEGIN_SRC c
+double fixed_point_secant_bisection_method(double (*f)(double), double x_0,
+                                           double x_1, double tolerance,
+                                           size_t max_iterations) {
+  double begin = x_0;
+  double end = x_1;
+  double root = x_0;
+
+  while (tolerance < fabs(f(root)) && max_iterations > 0) {
+    max_iterations--;
+
+    double secant_root = fixed_point_secant_method(f, begin, end, tolerance, 1);
+
+    if (secant_root < begin || secant_root > end) {
+      Array_double *range_root = bisect_find_root(f, begin, end, tolerance, 1);
+
+      begin = range_root->data[0];
+      end = range_root->data[1];
+      root = range_root->data[2];
+
+      free_vector(range_root);
+      continue;
+    }
+
+    root = secant_root;
+
+    if (f(root) * f(begin) < 0)
+      end = secant_root; // the root exists in [begin, secant_root]
+    else
+      begin = secant_root;
+  }
+
+  return root;
 }
 #+END_SRC
 
@@ -914,14 +1052,14 @@ a collection of pointers of ~Array_int~'s and its dimensions.
 + Output: a new ~Array_type~ with the size of the given array and its data
 
 #+BEGIN_SRC c
-#define InitArray(TYPE, ...)                                                   \
-  ({                                                                           \
-    TYPE temp[] = __VA_ARGS__;                                                 \
-    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
-    arr->size = sizeof(temp) / sizeof(temp[0]);                                \
-    arr->data = malloc(arr->size * sizeof(TYPE));                              \
-    memcpy(arr->data, temp, arr->size * sizeof(TYPE));                         \
-    arr;                                                                       \
+#define InitArray(TYPE, ...)                            \
+  ({                                                    \
+    TYPE temp[] = __VA_ARGS__;                          \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));   \
+    arr->size = sizeof(temp) / sizeof(temp[0]);         \
+    arr->data = malloc(arr->size * sizeof(TYPE));       \
+    memcpy(arr->data, temp, arr->size * sizeof(TYPE));  \
+    arr;                                                \
   })
 #+END_SRC
 
@@ -932,14 +1070,14 @@ a collection of pointers of ~Array_int~'s and its dimensions.
 + Output: a new ~Array_type~ with the given size filled with the initial value
 
 #+BEGIN_SRC c
-#define InitArrayWithSize(TYPE, SIZE, INIT_VALUE)                              \
-  ({                                                                           \
-    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
-    arr->size = SIZE;                                                          \
-    arr->data = malloc(arr->size * sizeof(TYPE));                              \
-    for (size_t i = 0; i < arr->size; i++)                                     \
-      arr->data[i] = INIT_VALUE;                                               \
-    arr;                                                                       \
+#define InitArrayWithSize(TYPE, SIZE, INIT_VALUE)      \
+  ({                                                   \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));  \
+    arr->size = SIZE;                                  \
+    arr->data = malloc(arr->size * sizeof(TYPE));      \
+    for (size_t i = 0; i < arr->size; i++)             \
+      arr->data[i] = INIT_VALUE;                       \
+    arr;                                               \
   })
 #+END_SRC
 

@@ -42,7 +42,7 @@ Then x^* = 0
 
 If we construct g(x) = 10x + xe^-x
 
-Then g'(x) = 10 + (e^-x - xe^-x) \Rightarrow g'(x) = 10 + e^0 - 0 = 11 (this wouldn't converge)n
+Then g'(x) = 10 + (e^-x - xe^-x) \Rightarrow g'(x) = 10 + e^0 - 0 = 11 (this wouldn't converge)
 
 However if g(x)) = x - (xe^-x), g'(x) = 1 - (e^-x - xe^-x) \Rightarrow g'(x^*) = 0
 

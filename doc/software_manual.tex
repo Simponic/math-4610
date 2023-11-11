@@ -1,4 +1,4 @@
-% Created 2023-11-01 Wed 20:52
+% Created 2023-11-10 Fri 20:54
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -15,13 +15,13 @@
 \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 \author{Elizabeth Hunt}
 \date{\today}
-\title{LIZFCM Software Manual (v0.2)}
+\title{LIZFCM Software Manual (v0.3)}
 \hypersetup{
  pdfauthor={Elizabeth Hunt},
- pdftitle={LIZFCM Software Manual (v0.2)},
+ pdftitle={LIZFCM Software Manual (v0.3)},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
+ pdfcreator={Emacs 29.1 (Org mode 9.7-pre)}, 
  pdflang={English}}
 \begin{document}
 
@@ -29,9 +29,8 @@
 \tableofcontents
 
 \setlength\parindent{0pt}
-
 \section{Design}
-\label{sec:org9458aa0}
+\label{sec:orgdac8577}
 The LIZFCM static library (at \url{https://github.com/Simponic/math-4610}) is a successor to my
 attempt at writing codes for the Fundamentals of Computational Mathematics course in Common
 Lisp, but the effort required to meet the requirement of creating a static library became
@@ -47,9 +46,8 @@ the C programming language. I have a couple tenets for its design:
 \item Routines are separated into "modules" that follow a form of separation of concerns
 in files, and not individual files per function.
 \end{itemize}
-
 \section{Compilation}
-\label{sec:orge0bab70}
+\label{sec:org7755023}
 A provided \texttt{Makefile} is added for convencience. It has been tested on an \texttt{arm}-based M1 machine running
 MacOS as well as \texttt{x86} Arch Linux.
 
@@ -71,15 +69,14 @@ produce an object file:
   gcc -Iinc/ -lm -Wall -c src/<the_routine>.c -o build/<the_routine>.o
 \end{verbatim}
 
-Which is then bundled into a static library in \texttt{lib/lizfcm.a} which can be linked
+Which is then bundled into a static library in \texttt{lib/lizfcm.a} and can be linked
 in the standard method.
-
 \section{The LIZFCM API}
-\label{sec:org91f4707}
+\label{sec:org940357c}
 \subsection{Simple Routines}
-\label{sec:orgc8c57e4}
+\label{sec:org28486b0}
 \subsubsection{\texttt{smaceps}}
-\label{sec:orgfeb6ef6}
+\label{sec:org1de3a4e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{smaceps}
@@ -103,9 +100,8 @@ float smaceps() {
   return machine_epsilon;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{dmaceps}}
-\label{sec:orgb3dc0f2}
+\label{sec:org742e61e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{dmaceps}
@@ -129,11 +125,10 @@ double dmaceps() {
   return machine_epsilon;
 }
 \end{verbatim}
-
 \subsection{Derivative Routines}
-\label{sec:orge88d677}
+\label{sec:org21233d3}
 \subsubsection{\texttt{central\_derivative\_at}}
-\label{sec:org32a8384}
+\label{sec:org6a00f6c}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{central\_derivative\_at}
@@ -162,9 +157,8 @@ double central_derivative_at(double (*f)(double), double a, double h) {
   return (y2 - y1) / (x2 - x1);
 }
 \end{verbatim}
-
 \subsubsection{\texttt{forward\_derivative\_at}}
-\label{sec:orgb6fdb9a}
+\label{sec:org78f40a9}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{forward\_derivative\_at}
@@ -193,9 +187,8 @@ double forward_derivative_at(double (*f)(double), double a, double h) {
   return (y2 - y1) / (x2 - x1);
 }
 \end{verbatim}
-
 \subsubsection{\texttt{backward\_derivative\_at}}
-\label{sec:org8b6070e}
+\label{sec:org888d29e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{backward\_derivative\_at}
@@ -224,11 +217,10 @@ double backward_derivative_at(double (*f)(double), double a, double h) {
   return (y2 - y1) / (x2 - x1);
 }
 \end{verbatim}
-
 \subsection{Vector Routines}
-\label{sec:org161e049}
+\label{sec:org73b87ea}
 \subsubsection{Vector Arithmetic: \texttt{add\_v, minus\_v}}
-\label{sec:org938756a}
+\label{sec:orgf8b5da1}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{add\_v}, \texttt{minus\_v}
@@ -257,9 +249,8 @@ Array_double *minus_v(Array_double *v1, Array_double *v2) {
   return sub;
 }
 \end{verbatim}
-
 \subsubsection{Norms: \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}}
-\label{sec:org53e3d42}
+\label{sec:orgc5368a1}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{l1\_norm}, \texttt{l2\_norm}, \texttt{linf\_norm}
@@ -291,9 +282,8 @@ double linf_norm(Array_double *v) {
   return max;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{vector\_distance}}
-\label{sec:org31d6d43}
+\label{sec:org0505e0b}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{vector\_distance}
@@ -312,9 +302,8 @@ double vector_distance(Array_double *v1, Array_double *v2,
   return dist;
 }
 \end{verbatim}
-
 \subsubsection{Distances: \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}}
-\label{sec:org3c2cede}
+\label{sec:org1c45dae}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{l1\_distance}, \texttt{l2\_distance}, \texttt{linf\_distance}
@@ -338,9 +327,8 @@ double linf_distance(Array_double *v1, Array_double *v2) {
   return vector_distance(v1, v2, &linf_norm);
 }
 \end{verbatim}
-
 \subsubsection{\texttt{sum\_v}}
-\label{sec:orgde8ccf4}
+\label{sec:org687d1bd}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{sum\_v}
@@ -357,10 +345,8 @@ double sum_v(Array_double *v) {
   return sum;
 }
 \end{verbatim}
-
-
 \subsubsection{\texttt{scale\_v}}
-\label{sec:orgb6465fa}
+\label{sec:org5926df1}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{scale\_v}
@@ -377,9 +363,8 @@ Array_double *scale_v(Array_double *v, double m) {
   return copy;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{free\_vector}}
-\label{sec:org38c1352}
+\label{sec:org3458f6a}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{free\_vector}
@@ -395,9 +380,8 @@ void free_vector(Array_double *v) {
   free(v);
 }
 \end{verbatim}
-
 \subsubsection{\texttt{add\_element}}
-\label{sec:org9fa4fc9}
+\label{sec:org54cba50}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{add\_element}
@@ -415,9 +399,8 @@ Array_double *add_element(Array_double *v, double x) {
   return pushed;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{slice\_element}}
-\label{sec:orga743fd5}
+\label{sec:org02cd40a}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{slice\_element}
@@ -434,9 +417,8 @@ Array_double *slice_element(Array_double *v, size_t x) {
   return sliced;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{copy\_vector}}
-\label{sec:org8918aa7}
+\label{sec:org4b0c599}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{copy\_vector}
@@ -454,9 +436,8 @@ Array_double *copy_vector(Array_double *v) {
   return copy;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{format\_vector\_into}}
-\label{sec:org744df1b}
+\label{sec:orgde12441}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{format\_vector\_into}
@@ -484,11 +465,10 @@ void format_vector_into(Array_double *v, char *s) {
   strcat(s, "\n");
 }
 \end{verbatim}
-
 \subsection{Matrix Routines}
-\label{sec:orge1c8a5a}
+\label{sec:orgd85d8ec}
 \subsubsection{\texttt{lu\_decomp}}
-\label{sec:org19cc6a1}
+\label{sec:org6a14cbd}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{lu\_decomp}
@@ -548,7 +528,7 @@ Matrix_double **lu_decomp(Matrix_double *m) {
 }
 \end{verbatim}
 \subsubsection{\texttt{bsubst}}
-\label{sec:org786580f}
+\label{sec:org8b51171}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{bsubst}
@@ -573,7 +553,7 @@ Array_double *bsubst(Matrix_double *u, Array_double *b) {
 }
 \end{verbatim}
 \subsubsection{\texttt{fsubst}}
-\label{sec:org1d422c6}
+\label{sec:orgf9180a0}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{fsubst}
@@ -599,9 +579,8 @@ Array_double *fsubst(Matrix_double *l, Array_double *b) {
   return x;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{solve\_matrix\_lu\_bsubst}}
-\label{sec:orgbf1dbcb}
+\label{sec:orgf3845f4}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -636,9 +615,8 @@ Array_double *solve_matrix_lu_bsubst(Matrix_double *m, Array_double *b) {
   return x;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{gaussian\_elimination}}
-\label{sec:orgc3ceb7b}
+\label{sec:orge926b79}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -692,9 +670,8 @@ Matrix_double *gaussian_elimination(Matrix_double *m) {
   return m_cp;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{solve\_matrix\_gaussian}}
-\label{sec:orgb8fc210}
+\label{sec:orgc4f0d99}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -726,10 +703,8 @@ Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b) {
   return solution;
 }
 \end{verbatim}
-
-
 \subsubsection{\texttt{m\_dot\_v}}
-\label{sec:org304f5e5}
+\label{sec:orgb7015af}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -749,9 +724,8 @@ Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
   return product;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{put\_identity\_diagonal}}
-\label{sec:orga145f39}
+\label{sec:orge955396}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -768,9 +742,8 @@ Matrix_double *put_identity_diagonal(Matrix_double *m) {
   return copy;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{slice\_column}}
-\label{sec:org1ea6d1a}
+\label{sec:org886997f}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -792,9 +765,8 @@ Matrix_double *slice_column(Matrix_double *m, size_t x) {
   return sliced;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{add\_column}}
-\label{sec:org733cc61}
+\label{sec:org405e1c5}
 \begin{itemize}
 \item Author: Elizabet Hunt
 \item Location: \texttt{src/matrix.c}
@@ -816,9 +788,8 @@ Matrix_double *add_column(Matrix_double *m, Array_double *v) {
   return pushed;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{copy\_matrix}}
-\label{sec:orge8936ce}
+\label{sec:org01ea984}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -836,9 +807,8 @@ Matrix_double *copy_matrix(Matrix_double *m) {
   return copy;
 }
 \end{verbatim}
-
 \subsubsection{\texttt{free\_matrix}}
-\label{sec:orgf7b674e}
+\label{sec:orgab8c2cf}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{src/matrix.c}
@@ -855,9 +825,8 @@ void free_matrix(Matrix_double *m) {
   free(m);
 }
 \end{verbatim}
-
 \subsubsection{\texttt{format\_matrix\_into}}
-\label{sec:org22902bd}
+\label{sec:org9e01978}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{format\_matrix\_into}
@@ -884,9 +853,9 @@ void format_matrix_into(Matrix_double *m, char *s) {
 }
 \end{verbatim}
 \subsection{Root Finding Methods}
-\label{sec:org6c22e6c}
+\label{sec:org81f315b}
 \subsubsection{\texttt{find\_ivt\_range}}
-\label{sec:org43ba5e5}
+\label{sec:orgc1dde4d}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{find\_ivt\_range}
@@ -894,62 +863,66 @@ void format_matrix_into(Matrix_double *m, char *s) {
 \item Input: a pointer to a oneary function taking a double and producing a double, the beginning point
 in \(R\) to search for a range, a \texttt{delta} step that is taken, and a \texttt{max\_steps} number of maximum
 iterations to perform.
-\item Output: a pair of \texttt{double}'s representing a closed closed interval \texttt{[beginning, end]}
+\item Output: a pair of \texttt{double}'s in an \texttt{Array\_double} representing a closed closed interval \texttt{[beginning, end]}
 \end{itemize}
 
 \begin{verbatim}
-double *find_ivt_range(double (*f)(double), double start_x, double delta,
-                       size_t max_steps) {
-  double *range = malloc(sizeof(double) * 2);
-
+// f is well defined at start_x + delta*n for all n on the integer range [0,
+// max_iterations]
+Array_double *find_ivt_range(double (*f)(double), double start_x, double delta,
+                             size_t max_iterations) {
   double a = start_x;
 
-  while (f(a) * f(start_x) >= 0 && max_steps-- > 0)
+  while (f(a) * f(a + delta) >= 0 && max_iterations > 0) {
+    max_iterations--;
     a += delta;
+  }
 
-  if (max_steps == 0 && f(a) * f(start_x) > 0)
+  double end = a + delta;
+  double begin = a - delta;
+
+  if (max_iterations == 0 && f(begin) * f(end) >= 0)
     return NULL;
-
-  range[0] = start_x;
-  range[1] = a + delta;
-  return range;
+  return InitArray(double, {begin, end});
 }
 \end{verbatim}
 \subsubsection{\texttt{bisect\_find\_root}}
-\label{sec:orgf8a3f0e}
+\label{sec:orgb42a836}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name(s): \texttt{bisect\_find\_root}
 \item Input: a one-ary function taking a double and producing a double, a closed interval represented
-by \texttt{a} and \texttt{b}: \texttt{[a, b]}, a \texttt{tolerance} at which we return the estimated root, and a
-\texttt{max\_iterations} to break us out of a loop if we can never reach the \texttt{tolerance}
-\item Output: a \texttt{double} representing the estimated root
+by \texttt{a} and \texttt{b}: \texttt{[a, b]}, a \texttt{tolerance} at which we return the estimated root once \(b-a < \text{tolerance}\), and a
+\texttt{max\_iterations} to break us out of a loop if we can never reach the \texttt{tolerance}.
+\item Output: a vector of size of 3 \texttt{double}'s representing first the .
 \item Description: recursively uses binary search to split the interval until we reach \texttt{tolerance}. We
 also assume the function \texttt{f} is continuous on \texttt{[a, b]}.
 \end{itemize}
 
 \begin{verbatim}
-double bisect_find_root(double (*f)(double), double a, double b,
-                        double tolerance, size_t max_iterations) {
+// f is continuous on [a, b]
+Array_double *bisect_find_root(double (*f)(double), double a, double b,
+                               double tolerance, size_t max_iterations) {
   assert(a <= b);
   // guarantee there's a root somewhere between a and b by IVT
   assert(f(a) * f(b) < 0);
 
   double c = (1.0 / 2) * (a + b);
   if (b - a < tolerance || max_iterations == 0)
-    return c;
+    return InitArray(double, a, b, c);
+
   if (f(a) * f(c) < 0)
     return bisect_find_root(f, a, c, tolerance, max_iterations - 1);
   return bisect_find_root(f, c, b, tolerance, max_iterations - 1);
 }
 \end{verbatim}
 \subsubsection{\texttt{bisect\_find\_root\_with\_error\_assumption}}
-\label{sec:orgeb72b17}
+\label{sec:org762134e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{bisect\_find\_root\_with\_error\_assumption}
 \item Input: a one-ary function taking a double and producing a double, a closed interval represented
-by \texttt{a} and \texttt{b}: \texttt{[a, b]}, and a \texttt{tolerance} at which we return the estimated root
+by \texttt{a} and \texttt{b}: \texttt{[a, b]}, and a \texttt{tolerance} equivalent to the above definition in \texttt{bisect\_find\_root}
 \item Output: a \texttt{double} representing the estimated root
 \item Description: using the bisection method we know that \(e_k \le (\frac{1}{2})^k (b_0 - a_0)\). So we can
 calculate \(k\) at the worst possible case (that the error is exactly the tolerance) to be
@@ -963,14 +936,160 @@ double bisect_find_root_with_error_assumption(double (*f)(double), double a,
 
   uint64_t max_iterations =
       (uint64_t)ceil((log(tolerance) - log(b - a)) / log(1 / 2.0));
-  return bisect_find_root(f, a, b, tolerance, max_iterations);
+
+  Array_double *a_b_root = bisect_find_root(f, a, b, tolerance, max_iterations);
+  double root = a_b_root->data[2];
+  free_vector(a_b_root);
+
+  return root;
 }
 \end{verbatim}
+\subsubsection{\texttt{fixed\_point\_iteration\_method}}
+\label{sec:org9f210ad}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{fixed\_point\_iteration\_method}
+\item Location: \texttt{src/roots.c}
+\item Input: a pointer to a oneary function \(f\) taking a double and producing a double of which we are
+trying to find a root, a guess \(x_0\), and a function \(g\) of the same signature of \(f\) at which we
+"step" our guesses according to the fixed point iteration method: \(x_k = g(x_{k-1})\). Additionally, a
+\texttt{max\_iterations} representing the maximum number of "steps" to take before arriving at our
+approximation and a \texttt{tolerance} to return our root if it becomes within [0 - tolerance, 0 + tolerance].
+\item Assumptions: \(g(x)\) must be a function such that at the point \(x^*\) (the found root) the derivative
+\(|g'(x^*)| \lt 1\)
+\item Output: a double representing the found approximate root \(\approx x^*\).
+\end{itemize}
 
+\begin{verbatim}
+double fixed_point_iteration_method(double (*f)(double), double (*g)(double),
+                                    double x_0, double tolerance,
+                                    size_t max_iterations) {
+  if (max_iterations <= 0)
+    return x_0;
+
+  double root = g(x_0);
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  return fixed_point_iteration_method(f, g, root, tolerance,
+                                      max_iterations - 1);
+}
+\end{verbatim}
+\subsubsection{\texttt{fixed\_point\_newton\_method}}
+\label{sec:orgedecc45}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{fixed\_point\_newton\_method}
+\item Location: \texttt{src/roots.c}
+\item Input: a pointer to a oneary function \(f\) taking a double and producing a double of which we are
+trying to find a root and another pointer to a function fprime of the same signature, a guess \(x_0\),
+and a \texttt{max\_iterations} and \texttt{tolerance} as defined in the above method are required inputs.
+\item Description: continually computes elements in the sequence \(x_n = x_{n-1} - \frac{f(x_{n-1})}{f'p(x_{n-1})}\)
+\item Output: a double representing the found approximate root \(\approx x^*\) recursively applied to the sequence
+given
+\end{itemize}
+\begin{verbatim}
+double fixed_point_newton_method(double (*f)(double), double (*fprime)(double),
+                                 double x_0, double tolerance,
+                                 size_t max_iterations) {
+  if (max_iterations <= 0)
+    return x_0;
+
+  double root = x_0 - f(x_0) / fprime(x_0);
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  return fixed_point_newton_method(f, fprime, root, tolerance,
+                                   max_iterations - 1);
+}
+\end{verbatim}
+\subsubsection{\texttt{fixed\_point\_secant\_method}}
+\label{sec:org63bcbe2}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{fixed\_point\_secant\_method}
+\item Location: \texttt{src/roots.c}
+\item Input: a pointer to a oneary function \(f\) taking a double and producing a double of which we are
+trying to find a root, a guess \(x_0\), and a \(\delta\) of our first guess at which we draw the first
+secant line according to the sequence \(x_n = x_{n-1} - f(x_{n-1}) \frac{x_{n-1} - x_{n-2}}{f(x_{n-1}) - f(x_{n-2})}\) which
+thus simplifies to \(x_1 = (x_0 + \delta) - f(x_0 + \delta) \frac{(x_0 + \delta) - x_0}{f(x_0 + \delta) - f(x_0)} = (x_0 + \delta) - f(x_0 + \delta) \frac{\delta}{f(x_0 + \delta) - f(x_0)}\).
+Additionally, a \texttt{max\_iterations} and \texttt{tolerance} as defined in the above method are required
+inputs.
+\item Output: a double representing the found approximate root \(\approx x^*\) recursively applied to the sequence.
+\end{itemize}
+\begin{verbatim}
+double fixed_point_secant_method(double (*f)(double), double x_0, double delta,
+                                 double tolerance, size_t max_iterations) {
+  if (max_iterations <= 0)
+    return x_0;
+
+  double x_1 = x_0 + delta;
+  double root = x_1 - f(x_1) * (delta / (f(x_1) - f(x_0)));
+
+  if (tolerance >= fabs(f(root)))
+    return root;
+
+  double new_delta = root - x_1;
+  return fixed_point_secant_method(f, x_1, new_delta, tolerance,
+                                   max_iterations);
+}
+\end{verbatim}
+\subsubsection{\texttt{fixed\_point\_secant\_bisection\_method}}
+\label{sec:org72d3074}
+\begin{itemize}
+\item Author: Elizabeth Hunt
+\item Name: \texttt{fixed\_point\_secant\_method}
+\item Location: \texttt{src/roots.c}
+\item Input: a pointer to a oneary function \(f\) taking a double and producing a double of which we are
+trying to find a root, a guess \(x_0\), and a \(\delta\) of which we define our first interval \([x_0, x_0 + \delta]\).
+Then, we perform a single iteration of the \texttt{fixed\_point\_secant\_method} on this interval; if it
+produces a root outside, we refresh the interval and root respectively with the given
+\texttt{bisect\_find\_root} method. Additionally, a \texttt{max\_iterations} and \texttt{tolerance} as defined in the above method are required
+inputs.
+\item Output: a double representing the found approximate root \(\approx x^*\) continually applied with the
+constraints defined.
+\end{itemize}
+
+\begin{verbatim}
+double fixed_point_secant_bisection_method(double (*f)(double), double x_0,
+                                           double delta, double tolerance,
+                                           size_t max_iterations) {
+  double begin = x_0;
+  double end = x_0 + delta;
+  double root = x_0;
+
+  while (tolerance < fabs(f(root)) && max_iterations > 0) {
+    max_iterations--;
+
+    double secant_root =
+        fixed_point_secant_method(f, begin, end - begin, tolerance, 1);
+
+    if (secant_root < begin || secant_root > end) {
+      Array_double *range_root = bisect_find_root(f, begin, end, tolerance, 1);
+
+      begin = range_root->data[0];
+      end = range_root->data[1];
+      root = range_root->data[2];
+
+      free_vector(range_root);
+      continue;
+    }
+
+    root = secant_root;
+    // the root exists in [begin, secant_root]
+    if (f(root) * f(begin) < 0)
+      end = secant_root;
+    else
+      begin = secant_root;
+  }
+
+  return root;
+}
+\end{verbatim}
 \subsection{Linear Routines}
-\label{sec:org4e14ee5}
+\label{sec:org04f3e56}
 \subsubsection{\texttt{least\_squares\_lin\_reg}}
-\label{sec:orge0ed136}
+\label{sec:orgbd48d8e}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Name: \texttt{least\_squares\_lin\_reg}
@@ -1000,12 +1119,12 @@ Line *least_squares_lin_reg(Array_double *x, Array_double *y) {
 }
 \end{verbatim}
 \subsection{Appendix / Miscellaneous}
-\label{sec:org0130d70}
+\label{sec:orgf6b30a5}
 \subsubsection{Data Types}
-\label{sec:org8aa1c01}
+\label{sec:orgd382789}
 \begin{enumerate}
 \item \texttt{Line}
-\label{sec:org596b0e7}
+\label{sec:orgab590b9}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/types.h}
@@ -1018,7 +1137,7 @@ typedef struct Line {
 } Line;
 \end{verbatim}
 \item The \texttt{Array\_<type>} and \texttt{Matrix\_<type>}
-\label{sec:org9d1c7c3}
+\label{sec:org5be3024}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/types.h}
@@ -1048,12 +1167,11 @@ typedef struct {
 } Matrix_int
 \end{verbatim}
 \end{enumerate}
-
 \subsubsection{Macros}
-\label{sec:orgb835bfa}
+\label{sec:org20a391c}
 \begin{enumerate}
 \item \texttt{c\_max} and \texttt{c\_min}
-\label{sec:org9ca763b}
+\label{sec:orgfc6117a}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -1065,9 +1183,8 @@ typedef struct {
 #define c_max(x, y) (((x) >= (y)) ? (x) : (y))
 #define c_min(x, y) (((x) <= (y)) ? (x) : (y))
 \end{verbatim}
-
 \item \texttt{InitArray}
-\label{sec:org3454dab}
+\label{sec:org472f039}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -1076,19 +1193,18 @@ typedef struct {
 \end{itemize}
 
 \begin{verbatim}
-#define InitArray(TYPE, ...)                                                   \
-  ({                                                                           \
-    TYPE temp[] = __VA_ARGS__;                                                 \
-    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
-    arr->size = sizeof(temp) / sizeof(temp[0]);                                \
-    arr->data = malloc(arr->size * sizeof(TYPE));                              \
-    memcpy(arr->data, temp, arr->size * sizeof(TYPE));                         \
-    arr;                                                                       \
+#define InitArray(TYPE, ...)                            \
+  ({                                                    \
+    TYPE temp[] = __VA_ARGS__;                          \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));   \
+    arr->size = sizeof(temp) / sizeof(temp[0]);         \
+    arr->data = malloc(arr->size * sizeof(TYPE));       \
+    memcpy(arr->data, temp, arr->size * sizeof(TYPE));  \
+    arr;                                                \
   })
 \end{verbatim}
-
 \item \texttt{InitArrayWithSize}
-\label{sec:orga4ec165}
+\label{sec:orgbe950b8}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}
@@ -1097,19 +1213,18 @@ typedef struct {
 \end{itemize}
 
 \begin{verbatim}
-#define InitArrayWithSize(TYPE, SIZE, INIT_VALUE)                              \
-  ({                                                                           \
-    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));                          \
-    arr->size = SIZE;                                                          \
-    arr->data = malloc(arr->size * sizeof(TYPE));                              \
-    for (size_t i = 0; i < arr->size; i++)                                     \
-      arr->data[i] = INIT_VALUE;                                               \
-    arr;                                                                       \
+#define InitArrayWithSize(TYPE, SIZE, INIT_VALUE)      \
+  ({                                                   \
+    Array_##TYPE *arr = malloc(sizeof(Array_##TYPE));  \
+    arr->size = SIZE;                                  \
+    arr->data = malloc(arr->size * sizeof(TYPE));      \
+    for (size_t i = 0; i < arr->size; i++)             \
+      arr->data[i] = INIT_VALUE;                       \
+    arr;                                               \
   })
 \end{verbatim}
-
 \item \texttt{InitMatrixWithSize}
-\label{sec:org0748f30}
+\label{sec:org5965f3b}
 \begin{itemize}
 \item Author: Elizabeth Hunt
 \item Location: \texttt{inc/macros.h}

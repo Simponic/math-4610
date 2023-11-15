@@ -42,6 +42,16 @@ Matrix_double *m_dot_m(Matrix_double *a, Matrix_double *b) {
   return prod;
 }
 
+Matrix_double *transpose(Matrix_double *m) {
+  Matrix_double *transposed = InitMatrixWithSize(double, m->cols, m->rows, 0.0);
+
+  for (size_t x = 0; x < m->rows; x++)
+    for (size_t y = 0; y < m->cols; y++)
+      transposed->data[y]->data[x] = m->data[x]->data[y];
+
+  return transposed;
+}
+
 Matrix_double *put_identity_diagonal(Matrix_double *m) {
   assert(m->rows == m->cols);
   Matrix_double *copy = copy_matrix(m);

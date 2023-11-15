@@ -230,3 +230,18 @@ UTEST(matrix, m_dot_m) {
   free_matrix(b);
   free_matrix(prod);
 }
+
+UTEST(matrix, transpose) {
+  Matrix_double *a = InitMatrixWithSize(double, 1, 3, 12.0);
+  a->data[0]->data[1] = 13.0;
+  Matrix_double *b = InitMatrixWithSize(double, 3, 1, 12.0);
+  b->data[1]->data[0] = 13.0;
+
+  Matrix_double *a_t = transpose(a);
+
+  EXPECT_TRUE(matrix_equal(a_t, b));
+
+  free_matrix(a_t);
+  free_matrix(a);
+  free_matrix(b);
+}

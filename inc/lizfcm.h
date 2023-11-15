@@ -40,6 +40,7 @@ extern Matrix_double *gaussian_elimination(Matrix_double *m);
 extern Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b);
 extern Array_double *m_dot_v(Matrix_double *m, Array_double *v);
 extern Matrix_double *m_dot_m(Matrix_double *a, Matrix_double *b);
+extern Matrix_double *transpose(Matrix_double *m);
 extern Array_double *col_v(Matrix_double *m, size_t x);
 extern Matrix_double *copy_matrix(Matrix_double *m);
 extern Matrix_double *add_column(Matrix_double *m, Array_double *col);
@@ -72,4 +73,7 @@ extern double fixed_point_secant_bisection_method(double (*f)(double),
                                                   double x_0, double x_1,
                                                   double tolerance,
                                                   size_t max_iterations);
+
+extern double dominant_eigenvalue(Matrix_double *m, Array_double *v,
+                                  double tolerance, size_t max_iterations);
 #endif // LIZFCM_H

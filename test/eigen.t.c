@@ -1,5 +1,24 @@
 #include "lizfcm.test.h"
 
+UTEST(eigen, leslie_matrix) {
+  Array_double *felicity = InitArray(double, {0.0, 1.5, 0.8});
+  Array_double *survivor_ratios = InitArray(double, {0.8, 0.55});
+
+  Matrix_double *m = InitMatrixWithSize(double, 3, 3, 0.0);
+  m->data[0]->data[0] = 0.0;
+  m->data[0]->data[1] = 1.5;
+  m->data[0]->data[2] = 0.8;
+  m->data[1]->data[0] = 0.8;
+  m->data[2]->data[1] = 0.55;
+
+  Matrix_double *leslie = leslie_matrix(survivor_ratios, felicity);
+
+  EXPECT_TRUE(matrix_equal(leslie, m));
+
+  free_matrix(leslie);
+  free_matrix(m);
+}
+
 UTEST(eigen, dominant_eigenvalue) {
   Matrix_double *m = InitMatrixWithSize(double, 2, 2, 0.0);
   m->data[0]->data[0] = 2.0;

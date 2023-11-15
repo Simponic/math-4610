@@ -1,0 +1,10 @@
+#+TITLE: Homework 6
+#+AUTHOR: Elizabeth Hunt
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
+
+* Question One
+See ~UTEST(eigen, dominant_eigenvalue)~ in ~test/eigen.t.c~ and the entry
+~Eigen-Adjacent -> dominant_eigenvalue~ in the LIZFCM API documentation.
+* Question Two

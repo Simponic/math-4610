@@ -1,4 +1,4 @@
-#+TITLE: LIZFCM Software Manual (v0.3)
+#+TITLE: LIZFCM Software Manual (v0.4)
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}
@@ -285,7 +285,6 @@ double sum_v(Array_double *v) {
   return sum;
 }
 #+END_SRC
-
 
 *** ~scale_v~
 + Author: Elizabeth Hunt
@@ -993,6 +992,71 @@ Line *least_squares_lin_reg(Array_double *x, Array_double *y) {
   return line;
 }
 #+END_SRC
+
+** Eigen-Adjacent
+*** ~dominant_eigenvalue~
++ Author: Elizabeth Hunt
++ Name: ~dominant_eigenvalue~
++ Location: ~src/eigen.c~
++ Input: a pointer to an invertible matrix ~m~, an initial eigenvector guess ~v~ (that is non
+  zero or orthogonal to an eigenvector with the dominant eigenvalue), a ~tolerance~ and
+  ~max_iterations~ that act as stop conditions
++ Output: the dominant eigenvalue with the highest magnitude, approximated with the Power
+  Iteration Method
+
+#+BEGIN_SRC c
+double dominant_eigenvalue(Matrix_double *m, Array_double *v, double tolerance,
+                           size_t max_iterations) {
+  assert(m->rows == m->cols);
+  assert(m->rows == v->size);
+
+  double error = tolerance;
+  size_t iter = max_iterations;
+  double lambda = 0.0;
+  Array_double *eigenvector_1 = copy_vector(v);
+
+  while (error >= tolerance && (--iter) > 0) {
+    Array_double *eigenvector_2 = m_dot_v(m, eigenvector_1);
+
+    Array_double *mx = m_dot_v(m, eigenvector_2);
+    double new_lambda =
+        v_dot_v(mx, eigenvector_2) / v_dot_v(eigenvector_2, eigenvector_2);
+
+    error = fabs(new_lambda - lambda);
+    lambda = new_lambda;
+    free_vector(eigenvector_1);
+    eigenvector_1 = eigenvector_2;
+  }
+
+  return lambda;
+}
+#+END_SRC
+*** ~leslie_matrix~
++ Author: Elizabeth Hunt
++ Name: ~leslie_matrix~
++ Location: ~src/eigen.c~
++ Input: two pointers to ~Array_double~'s representing the ratio of individuals in an age class
+  $x$ getting to the next age class $x+1$ and the number of offspring that individuals in an age
+  class create in age class 0.
++ Output: the leslie matrix generated with the input vectors.
+
+#+BEGIN_SRC c
+Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
+                             Array_double *age_class_offspring) {
+  assert(age_class_surivor_ratio->size + 1 == age_class_offspring->size);
+
+  Matrix_double *leslie = InitMatrixWithSize(double, age_class_offspring->size,
+                                             age_class_offspring->size, 0.0);
+
+  free_vector(leslie->data[0]);
+  leslie->data[0] = age_class_offspring;
+
+  for (size_t i = 0; i < age_class_surivor_ratio->size; i++)
+    leslie->data[i + 1]->data[i] = age_class_surivor_ratio->data[i];
+  return leslie;
+}
+#+END_SRC
+
 ** Appendix / Miscellaneous
 *** Data Types
 **** ~Line~

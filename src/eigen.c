@@ -14,10 +14,8 @@ Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
   free_vector(leslie->data[0]);
   leslie->data[0] = age_class_offspring;
 
-  for (size_t i = 0; i < age_class_surivor_ratio->size; i++) {
+  for (size_t i = 0; i < age_class_surivor_ratio->size; i++)
     leslie->data[i + 1]->data[i] = age_class_surivor_ratio->data[i];
-  }
-
   return leslie;
 }
 
@@ -37,9 +35,9 @@ double dominant_eigenvalue(Matrix_double *m, Array_double *v, double tolerance,
     Array_double *mx = m_dot_v(m, eigenvector_2);
     double new_lambda =
         v_dot_v(mx, eigenvector_2) / v_dot_v(eigenvector_2, eigenvector_2);
+
     error = fabs(new_lambda - lambda);
     lambda = new_lambda;
-
     free_vector(eigenvector_1);
     eigenvector_1 = eigenvector_2;
   }

@@ -1017,6 +1017,10 @@ double dominant_eigenvalue(Matrix_double *m, Array_double *v, double tolerance,
 
   while (error >= tolerance && (--iter) > 0) {
     Array_double *eigenvector_2 = m_dot_v(m, eigenvector_1);
+    Array_double *normalized_eigenvector_2 =
+        scale_v(eigenvector_2, 1.0 / linf_norm(eigenvector_2));
+    free_vector(eigenvector_2);
+    eigenvector_2 = normalized_eigenvector_2;
 
     Array_double *mx = m_dot_v(m, eigenvector_2);
     double new_lambda =

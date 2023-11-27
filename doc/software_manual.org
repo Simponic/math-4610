@@ -1096,7 +1096,44 @@ double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
   return shift_inverse_power_eigenvalue(m, v, 0.0, tolerance, max_iterations);
 }
 #+END_SRC
+*** ~partition_find_eigenvalues~
++ Author: Elizabeth Hunt
++ Name: ~partition_find_eigenvalues~
++ Location: ~src/eigen.c~
++ Input: a pointer to an invertible matrix ~m~, a matrix whose rows correspond to initial
+  eigenvector guesses at each "partition" which is computed from a uniform distribution
+  between the number of rows this "guess matrix" has and the distance between the least
+  dominant eigenvalue and the most dominant. Additionally, a ~max_iterations~ and a ~tolerance~
+  that act as stop conditions.
++ Output: a vector of ~doubles~ corresponding to the "nearest" eigenvalue at the midpoint of
+  each partition, via the given guess of that partition.
+#+BEGIN_SRC c
+Array_double *partition_find_eigenvalues(Matrix_double *m,
+                                         Matrix_double *guesses,
+                                         double tolerance,
+                                         size_t max_iterations) {
+  assert(guesses->rows >=
+         2); // we need at least, the most and least dominant eigenvalues
 
+  double end = dominant_eigenvalue(m, guesses->data[guesses->rows - 1],
+                                   tolerance, max_iterations);
+  double begin =
+      least_dominant_eigenvalue(m, guesses->data[0], tolerance, max_iterations);
+
+  double delta = (end - begin) / guesses->rows;
+  Array_double *eigenvalues = InitArrayWithSize(double, guesses->rows, 0.0);
+  for (size_t i = 0; i < guesses->rows; i++) {
+    double box_midpoint = ((delta * i) + (delta * (i + 1))) / 2;
+
+    double nearest_eigenvalue = shift_inverse_power_eigenvalue(
+        m, guesses->data[i], box_midpoint, tolerance, max_iterations);
+
+    eigenvalues->data[i] = nearest_eigenvalue;
+  }
+
+  return eigenvalues;
+}
+#+END_SRC
 *** ~leslie_matrix~
 + Author: Elizabeth Hunt
 + Name: ~leslie_matrix~

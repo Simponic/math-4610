@@ -82,6 +82,10 @@ extern double shift_inverse_power_eigenvalue(Matrix_double *m, Array_double *v,
 extern double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
                                         double tolerance,
                                         size_t max_iterations);
+extern Array_double *partition_find_eigenvalues(Matrix_double *m,
+                                                Matrix_double *guesses,
+                                                double tolerance,
+                                                size_t max_iterations);
 extern Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
                                     Array_double *age_class_offspring);
 #endif // LIZFCM_H

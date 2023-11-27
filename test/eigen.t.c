@@ -1,4 +1,5 @@
 #include "lizfcm.test.h"
+#include <math.h>
 
 Matrix_double *eigen_test_matrix() {
   // produces a matrix that has eigenvalues [5 + sqrt{17}, 2, 5 - sqrt{17}]
@@ -67,6 +68,40 @@ UTEST(eigen, shifted_eigenvalue) {
       m, v_guess, shift, tolerance, max_iterations);
 
   EXPECT_NEAR(approx_middle_eigenvalue, expected_middle_eigenvalue, tolerance);
+}
+
+UTEST(eigen, partition_find_eigenvalues) {
+  Matrix_double *m = eigen_test_matrix();
+
+  double least_dominant_eigenvalue = 0.87689; // 5 - sqrt{17}
+  double dominant_eigenvalue = 9.12311;       // 5 + sqrt{17}
+  double expected_middle_eigenvalue = 2.0;
+  double expected_eigenvalues[3] = {least_dominant_eigenvalue,
+                                    expected_middle_eigenvalue,
+                                    dominant_eigenvalue};
+
+  size_t partitions = 10;
+  Matrix_double *guesses = InitMatrixWithSize(double, partitions, 3, 0.0);
+  for (size_t y = 0; y < guesses->rows; y++) {
+    free_vector(guesses->data[y]);
+    guesses->data[y] = InitArray(double, {0.5, 1.0, 0.75});
+  }
+
+  double tolerance = 0.0001;
+  uint64_t max_iterations = 64;
+
+  int eigenvalues_found[3] = {false, false, false};
+  Array_double *partition_eigenvalues =
+      partition_find_eigenvalues(m, guesses, tolerance, max_iterations);
+
+  for (size_t i = 0; i < partition_eigenvalues->size; i++)
+    for (size_t eigenvalue_i = 0; eigenvalue_i < 3; eigenvalue_i++)
+      if (fabs(partition_eigenvalues->data[i] - expected_eigenvalues[i]) <=
+          tolerance)
+        eigenvalues_found[eigenvalue_i] = true;
+
+  for (size_t eigenvalue_i = 0; eigenvalue_i < 3; eigenvalue_i++)
+    EXPECT_TRUE(eigenvalues_found[eigenvalue_i]);
 }
 
 UTEST(eigen, leslie_matrix_dominant_eigenvalue) {

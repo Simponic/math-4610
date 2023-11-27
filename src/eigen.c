@@ -84,6 +84,32 @@ double shift_inverse_power_eigenvalue(Matrix_double *m, Array_double *v,
   return lambda;
 }
 
+Array_double *partition_find_eigenvalues(Matrix_double *m,
+                                         Matrix_double *guesses,
+                                         double tolerance,
+                                         size_t max_iterations) {
+  assert(guesses->rows >=
+         2); // we need at least, the most and least dominant eigenvalues
+
+  double end = dominant_eigenvalue(m, guesses->data[guesses->rows - 1],
+                                   tolerance, max_iterations);
+  double begin =
+      least_dominant_eigenvalue(m, guesses->data[0], tolerance, max_iterations);
+
+  double delta = (end - begin) / guesses->rows;
+  Array_double *eigenvalues = InitArrayWithSize(double, guesses->rows, 0.0);
+  for (size_t i = 0; i < guesses->rows; i++) {
+    double box_midpoint = ((delta * i) + (delta * (i + 1))) / 2;
+
+    double nearest_eigenvalue = shift_inverse_power_eigenvalue(
+        m, guesses->data[i], box_midpoint, tolerance, max_iterations);
+
+    eigenvalues->data[i] = nearest_eigenvalue;
+  }
+
+  return eigenvalues;
+}
+
 double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
                                  double tolerance, size_t max_iterations) {
   return shift_inverse_power_eigenvalue(m, v, 0.0, tolerance, max_iterations);

@@ -25,7 +25,7 @@ UTEST(eigen, leslie_matrix_dominant_eigenvalue) {
   Array_double *felicity = InitArray(double, {0.0, 1.5, 0.8});
   Array_double *survivor_ratios = InitArray(double, {0.8, 0.55});
   Matrix_double *leslie = leslie_matrix(survivor_ratios, felicity);
-  Array_double *v_guess = InitArrayWithSize(double, 3, 1.0);
+  Array_double *v_guess = InitArrayWithSize(double, 3, 2.0);
   double tolerance = 0.0001;
   uint64_t max_iterations = 64;
 

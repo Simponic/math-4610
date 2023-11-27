@@ -1038,7 +1038,7 @@ double dominant_eigenvalue(Matrix_double *m, Array_double *v, double tolerance,
 + Input: two pointers to ~Array_double~'s representing the ratio of individuals in an age class
   $x$ getting to the next age class $x+1$ and the number of offspring that individuals in an age
   class create in age class 0.
-+ Output: the leslie matrix generated with the input vectors.
++ Output: the leslie matrix generated from the input vectors.
 
 #+BEGIN_SRC c
 Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,

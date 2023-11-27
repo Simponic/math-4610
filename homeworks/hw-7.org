@@ -8,3 +8,8 @@
 See ~UTEST(eigen, dominant_eigenvalue)~ in ~test/eigen.t.c~ and the entry
 ~Eigen-Adjacent -> dominant_eigenvalue~ in the LIZFCM API documentation.
 * Question Two
+See ~UTEST(eigen, leslie_matrix_dominant_eigenvalue)~ in ~test/eigen.t.c~
+and the entry ~Eigen-Adjacent -> leslie_matrix~ in the LIZFCM API
+documentation.
+* Question Three
+

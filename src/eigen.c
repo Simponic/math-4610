@@ -12,7 +12,7 @@ Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
                                              age_class_offspring->size, 0.0);
 
   free_vector(leslie->data[0]);
-  leslie->data[0] = age_class_offspring;
+  leslie->data[0] = copy_vector(age_class_offspring);
 
   for (size_t i = 0; i < age_class_surivor_ratio->size; i++)
     leslie->data[i + 1]->data[i] = age_class_surivor_ratio->data[i];

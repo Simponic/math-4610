@@ -17,6 +17,30 @@ UTEST(eigen, leslie_matrix) {
 
   free_matrix(leslie);
   free_matrix(m);
+  free_vector(felicity);
+  free_vector(survivor_ratios);
+}
+
+UTEST(eigen, leslie_matrix_dominant_eigenvalue) {
+  Array_double *felicity = InitArray(double, {0.0, 1.5, 0.8});
+  Array_double *survivor_ratios = InitArray(double, {0.8, 0.55});
+  Matrix_double *leslie = leslie_matrix(survivor_ratios, felicity);
+  Array_double *v_guess = InitArrayWithSize(double, 3, 1.0);
+  double tolerance = 0.0001;
+  uint64_t max_iterations = 64;
+
+  double expect_dominant_eigenvalue = 1.22005;
+
+  double approx_dominant_eigenvalue =
+      dominant_eigenvalue(leslie, v_guess, tolerance, max_iterations);
+
+  EXPECT_NEAR(expect_dominant_eigenvalue, approx_dominant_eigenvalue,
+              tolerance);
+
+  free_vector(v_guess);
+  free_vector(survivor_ratios);
+  free_vector(felicity);
+  free_matrix(leslie);
 }
 
 UTEST(eigen, dominant_eigenvalue) {

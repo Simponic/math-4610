@@ -14,5 +14,7 @@ x^{k + 1} \rightarrow Ax^k
       }
       x_1[i] = sum / a[i][i];
     }
+
+    err = 0.0;
   }
 #+END_SRC

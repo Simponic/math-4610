@@ -76,6 +76,9 @@ extern double fixed_point_secant_bisection_method(double (*f)(double),
 
 extern double dominant_eigenvalue(Matrix_double *m, Array_double *v,
                                   double tolerance, size_t max_iterations);
+extern double shift_inverse_power_eigenvalue(Matrix_double *m, Array_double *v,
+                                             double shift, double tolerance,
+                                             size_t max_iterations);
 extern double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
                                         double tolerance,
                                         size_t max_iterations);

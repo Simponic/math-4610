@@ -21,7 +21,23 @@ finds the least dominant eigenvalue on the matrix:
 0 & 2 & 6 
 \end{bmatrix}
 
-which has eigenvalues: $5 + \sqrt{17}, 2, 5 - \sqrt{17}$ and should produce $\sqrt{17}$.
+which has eigenvalues: $5 + \sqrt{17}, 2, 5 - \sqrt{17}$ and should thus produce $5 - \sqrt{17}$.
 
 See also the entry ~Eigen-Adjacent -> least_dominant_eigenvalue~ in the LIZFCM API
+documentation.
+* Question Four
+See ~UTEST(eigen, shifted_eigenvalue)~ in ~test/eigen.t.c~ which
+finds the least dominant eigenvalue on the matrix:
+
+\begin{bmatrix}
+2 & 2 & 4 \\
+1 & 4 & 7 \\
+0 & 2 & 6 
+\end{bmatrix}
+
+which has eigenvalues: $5 + \sqrt{17}, 2, 5 - \sqrt{17}$ and should thus produce $2.0$.
+
+With the initial guess: $[0.5, 1.0, 0.75]$.
+
+See also the entry ~Eigen-Adjacent -> shift_inverse_power_eigenvalue~ in the LIZFCM API
 documentation.

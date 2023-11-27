@@ -76,6 +76,9 @@ extern double fixed_point_secant_bisection_method(double (*f)(double),
 
 extern double dominant_eigenvalue(Matrix_double *m, Array_double *v,
                                   double tolerance, size_t max_iterations);
+extern double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
+                                        double tolerance,
+                                        size_t max_iterations);
 extern Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
                                     Array_double *age_class_offspring);
 #endif // LIZFCM_H

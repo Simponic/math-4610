@@ -43,6 +43,30 @@ UTEST(eigen, leslie_matrix_dominant_eigenvalue) {
   free_matrix(leslie);
 }
 
+UTEST(eigen, least_dominant_eigenvalue) {
+
+  Matrix_double *m = InitMatrixWithSize(double, 3, 3, 0.0);
+  m->data[0]->data[0] = 2.0;
+  m->data[0]->data[1] = 2.0;
+  m->data[0]->data[2] = 4.0;
+  m->data[1]->data[0] = 1.0;
+  m->data[1]->data[1] = 4.0;
+  m->data[1]->data[2] = 7.0;
+  m->data[2]->data[1] = 2.0;
+  m->data[2]->data[2] = 6.0;
+
+  double expected_least_dominant_eigenvalue = 0.87689; // 5 - sqrt(17)
+  double tolerance = 0.0001;
+  uint64_t max_iterations = 64;
+
+  Array_double *v_guess = InitArrayWithSize(double, 3, 2.0);
+  double approx_least_dominant_eigenvalue =
+      least_dominant_eigenvalue(m, v_guess, tolerance, max_iterations);
+
+  EXPECT_NEAR(expected_least_dominant_eigenvalue,
+              approx_least_dominant_eigenvalue, tolerance);
+}
+
 UTEST(eigen, dominant_eigenvalue) {
   Matrix_double *m = InitMatrixWithSize(double, 2, 2, 0.0);
   m->data[0]->data[0] = 2.0;

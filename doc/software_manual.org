@@ -1,4 +1,4 @@
-#+TITLE: LIZFCM Software Manual (v0.4)
+#+TITLE: LIZFCM Software Manual (v0.5)
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}

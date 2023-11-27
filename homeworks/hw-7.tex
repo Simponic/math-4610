@@ -1,0 +1,107 @@
+% Created 2023-11-27 Mon 15:13
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+\author{Elizabeth Hunt}
+\date{\today}
+\title{Homework 7}
+\hypersetup{
+ pdfauthor={Elizabeth Hunt},
+ pdftitle={Homework 7},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.1 (Org mode 9.7-pre)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setlength\parindent{0pt}
+\section{Question One}
+\label{sec:org8ef0ee6}
+See \texttt{UTEST(eigen, dominant\_eigenvalue)} in \texttt{test/eigen.t.c} and the entry
+\texttt{Eigen-Adjacent -> dominant\_eigenvalue} in the LIZFCM API documentation.
+\section{Question Two}
+\label{sec:orgbdba5c1}
+See \texttt{UTEST(eigen, leslie\_matrix\_dominant\_eigenvalue)} in \texttt{test/eigen.t.c}
+and the entry \texttt{Eigen-Adjacent -> leslie\_matrix} in the LIZFCM API
+documentation.
+\section{Question Three}
+\label{sec:org19b04f4}
+See \texttt{UTEST(eigen, least\_dominant\_eigenvalue)} in \texttt{test/eigen.t.c} which
+finds the least dominant eigenvalue on the matrix:
+
+\begin{bmatrix}
+2 & 2 & 4 \\
+1 & 4 & 7 \\
+0 & 2 & 6 
+\end{bmatrix}
+
+which has eigenvalues: \(5 + \sqrt{17}, 2, 5 - \sqrt{17}\) and should thus produce \(5 - \sqrt{17}\).
+
+See also the entry \texttt{Eigen-Adjacent -> least\_dominant\_eigenvalue} in the LIZFCM API
+documentation.
+\section{Question Four}
+\label{sec:orgc58d42d}
+See \texttt{UTEST(eigen, shifted\_eigenvalue)} in \texttt{test/eigen.t.c} which
+finds the least dominant eigenvalue on the matrix:
+
+\begin{bmatrix}
+2 & 2 & 4 \\
+1 & 4 & 7 \\
+0 & 2 & 6 
+\end{bmatrix}
+
+which has eigenvalues: \(5 + \sqrt{17}, 2, 5 - \sqrt{17}\) and should thus produce \(2.0\).
+
+With the initial guess: \([0.5, 1.0, 0.75]\).
+
+See also the entry \texttt{Eigen-Adjacent -> shift\_inverse\_power\_eigenvalue} in the LIZFCM API
+documentation.
+\section{Question Five}
+\label{sec:orga369221}
+See \texttt{UTEST(eigen, partition\_find\_eigenvalues)} in \texttt{test/eigen.t.c} which
+finds the eigenvalues in a partition of 10 on the matrix:
+
+\begin{bmatrix}
+2 & 2 & 4 \\
+1 & 4 & 7 \\
+0 & 2 & 6 
+\end{bmatrix}
+
+which has eigenvalues: \(5 + \sqrt{17}, 2, 5 - \sqrt{17}\), and should produce all three from
+the partitions when given the guesses \([0.5, 1.0, 0.75]\) from the questions above.
+
+See also the entry \texttt{Eigen-Adjacent -> partition\_find\_eigenvalues} in the LIZFCM API
+documentation.
+\section{Question Six}
+\label{sec:orgadc3078}
+Consider we have the results of two methods developed in this homework: \texttt{least\_dominant\_eigenvalue}, and \texttt{dominant\_eigenvalue}
+into \texttt{lambda\_0}, \texttt{lambda\_n}, respectively. Also assume that we have the method implemented as we've introduced,
+\texttt{shift\_inverse\_power\_eigenvalue}.
+
+Then, we begin at the midpoint of \texttt{lambda\_0} and \texttt{lambda\_n}, and compute the
+\texttt{new\_lambda = shift\_inverse\_power\_eigenvalue}
+with a shift at the midpoint, and some given initial guess.
+
+\begin{enumerate}
+\item If the result is equal (or within some tolerance) to \texttt{lambda\_n} then the closest eigenvalue to the midpoint
+is still the dominant eigenvalue, and thus the next most dominant will be on the left. Set \texttt{lambda\_n}
+to the midpoint and reiterate.
+\item If the result is greater or equal to \texttt{lambda\_0} we know an eigenvalue of greater or equal magnitude
+exists on the right. So, we set \texttt{lambda\_0} to this eigenvalue associated with the midpoint, and
+re-iterate.
+\item Continue re-iterating until we hit some given maximum number of iterations. Finally we will return
+\texttt{new\_lambda}.
+\end{enumerate}
+\end{document}

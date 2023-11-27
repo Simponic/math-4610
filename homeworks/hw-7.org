@@ -1,4 +1,4 @@
-#+TITLE: Homework 6
+#+TITLE: Homework 7
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}
@@ -58,4 +58,19 @@ See also the entry ~Eigen-Adjacent -> partition_find_eigenvalues~ in the LIZFCM 
 documentation.
 
 * Question Six
+Consider we have the results of two methods developed in this homework: ~least_dominant_eigenvalue~, and ~dominant_eigenvalue~
+into ~lambda_0~, ~lambda_n~, respectively. Also assume that we have the method implemented as we've introduced,
+~shift_inverse_power_eigenvalue~.
 
+Then, we begin at the midpoint of ~lambda_0~ and ~lambda_n~, and compute the
+~new_lambda = shift_inverse_power_eigenvalue~
+with a shift at the midpoint, and some given initial guess.
+
+1. If the result is equal (or within some tolerance) to ~lambda_n~ then the closest eigenvalue to the midpoint
+   is still the dominant eigenvalue, and thus the next most dominant will be on the left. Set ~lambda_n~
+   to the midpoint and reiterate.
+2. If the result is greater or equal to ~lambda_0~ we know an eigenvalue of greater or equal magnitude
+   exists on the right. So, we set ~lambda_0~ to this eigenvalue associated with the midpoint, and
+   re-iterate.
+3. Continue re-iterating until we hit some given maximum number of iterations. Finally we will return
+   ~new_lambda~.

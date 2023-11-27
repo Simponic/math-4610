@@ -4,19 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
-Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
-                             Array_double *age_class_offspring) {
-  assert(age_class_surivor_ratio->size + 1 == age_class_offspring->size);
-
-  Matrix_double *leslie = InitMatrixWithSize(double, age_class_offspring->size,
-                                             age_class_offspring->size, 0.0);
-
-  free_vector(leslie->data[0]);
-  leslie->data[0] = copy_vector(age_class_offspring);
-
-  for (size_t i = 0; i < age_class_surivor_ratio->size; i++)
-    leslie->data[i + 1]->data[i] = age_class_surivor_ratio->data[i];
-  return leslie;
+double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
+                                 double tolerance, size_t max_iterations) {
+  return shift_inverse_power_eigenvalue(m, v, 0.0, tolerance, max_iterations);
 }
 
 double dominant_eigenvalue(Matrix_double *m, Array_double *v, double tolerance,
@@ -110,7 +100,17 @@ Array_double *partition_find_eigenvalues(Matrix_double *m,
   return eigenvalues;
 }
 
-double least_dominant_eigenvalue(Matrix_double *m, Array_double *v,
-                                 double tolerance, size_t max_iterations) {
-  return shift_inverse_power_eigenvalue(m, v, 0.0, tolerance, max_iterations);
+Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
+                             Array_double *age_class_offspring) {
+  assert(age_class_surivor_ratio->size + 1 == age_class_offspring->size);
+
+  Matrix_double *leslie = InitMatrixWithSize(double, age_class_offspring->size,
+                                             age_class_offspring->size, 0.0);
+
+  free_vector(leslie->data[0]);
+  leslie->data[0] = copy_vector(age_class_offspring);
+
+  for (size_t i = 0; i < age_class_surivor_ratio->size; i++)
+    leslie->data[i + 1]->data[i] = age_class_surivor_ratio->data[i];
+  return leslie;
 }

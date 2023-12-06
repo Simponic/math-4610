@@ -1,0 +1,20 @@
+Jacobi Iteration (cont.)
+
+x^{k+1} = D^{-1}(b - (L + U)x^k)
+
+{
+  x^{k+1} = x^k + D^-1 r^k
+  r^{k} = b - Ax^k
+}
+
+error: || x^{k+1} - x^k ||_2
+residual: || r^k ||_2
+
+Gauss-Seidel Iteration:
+A = (L + D + U)
+\Rightarrow Ax = b
+  (D + U)x = b - Lx
+  x = (D + U)^-1 (b - Lx)
+
+x^{k+1} = (D+U)^{-1}(b - Lx^k)
+(D + U)^{-1} x (bsubst)

@@ -1266,5 +1266,5 @@ a collection of pointers of ~Array_int~'s and its dimensions.
       matrix->data[y] = InitArrayWithSize(TYPE, COLS, INIT_VALUE);             \
     matrix;                                                                    \
   })
-#+END_SRc
+#+END_SRC
 

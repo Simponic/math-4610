@@ -88,4 +88,10 @@ extern Array_double *partition_find_eigenvalues(Matrix_double *m,
                                                 size_t max_iterations);
 extern Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
                                     Array_double *age_class_offspring);
+
+extern double rand_from(double min, double max);
+
+extern Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
+                                  double tolerance, size_t max_iterations);
+
 #endif // LIZFCM_H

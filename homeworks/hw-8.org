@@ -1,0 +1,17 @@
+#+TITLE: Homework 7
+#+AUTHOR: Elizabeth Hunt
+#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+OPTIONS: toc:nil
+
+TODO: Update LIZFCM org file with jacobi solve, format_matrix_into, rand
+
+* Question One
+See ~UTEST(jacobi, solve_jacobi)~ in ~test/jacobi.t.c~ and the entry
+~Jacobi -> solve_jacobi~ in the LIZFCM API documentation.
+* Question Two
+A problem arises when using the Jacobi method to solve for the previous population
+distribution, $n_k$, from $Ln_{k} = n_{k+1}$, because a Leslie matrix is not diagonally
+dominant and will cause a division by zero. Likewise, we cannot factor it into $L$
+and $U$ terms and apply back substitution because pivot points are zero.
+* Question Three

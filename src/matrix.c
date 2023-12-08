@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
-#include <string.h>
+n #include<string.h>
 
-Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
+    Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
   assert(v->size == m->cols);
 
   Array_double *product = copy_vector(v);
@@ -222,6 +222,35 @@ Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b) {
   return solution;
 }
 
+Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
+                           double l2_convergence_tolerance,
+                           size_t max_iterations) {
+  size_t iter = max_iterations;
+
+  Array_double *x_k = InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+  Array_double *x_k_1 =
+      InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+
+  while ((--iter) > 0 && l2_distance(x_k_1, x_k) > l2_convergence_tolerance) {
+    for (size_t i = 0; i < x_k->size; i++) {
+      double delta = 0.0;
+      for (size_t j = 0; j < x_k->size; j++) {
+        if (i == j)
+          continue;
+        delta += m->data[i]->data[j] * x_k->data[j];
+      }
+      x_k_1->data[i] = (b->data[i] - delta) / m->data[i]->data[i];
+    }
+
+    Array_double *tmp = x_k;
+    x_k = x_k_1;
+    x_k_1 = tmp;
+  }
+
+  free_vector(x_k);
+  return x_k_1;
+}
+
 Matrix_double *slice_column(Matrix_double *m, size_t x) {
   Matrix_double *sliced = copy_matrix(m);
 
@@ -259,7 +288,7 @@ void format_matrix_into(Matrix_double *m, char *s) {
     strcpy(s, "empty");
 
   for (size_t y = 0; y < m->rows; ++y) {
-    char row_s[256];
+    char row_s[5192];
     strcpy(row_s, "");
 
     format_vector_into(m->data[y], row_s);

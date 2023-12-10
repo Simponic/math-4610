@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
-n #include<string.h>
+#include <string.h>
 
-    Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
+Array_double *m_dot_v(Matrix_double *m, Array_double *v) {
   assert(v->size == m->cols);
 
   Array_double *product = copy_vector(v);
@@ -161,30 +161,32 @@ Array_double *solve_matrix_lu_bsubst(Matrix_double *m, Array_double *b) {
 }
 
 Matrix_double *gaussian_elimination(Matrix_double *m) {
-  uint64_t h = 0;
-  uint64_t k = 0;
+  uint64_t h = 0, k = 0;
 
   Matrix_double *m_cp = copy_matrix(m);
 
   while (h < m_cp->rows && k < m_cp->cols) {
-    uint64_t max_row = 0;
-    double total_max = 0.0;
+    uint64_t max_row = h;
+    double max_val = 0.0;
 
     for (uint64_t row = h; row < m_cp->rows; row++) {
-      double this_max = c_max(fabs(m_cp->data[row]->data[k]), total_max);
-      if (c_max(this_max, total_max) == this_max) {
+      double val = fabs(m_cp->data[row]->data[k]);
+      if (val > max_val) {
+        max_val = val;
         max_row = row;
       }
     }
 
-    if (max_row == 0) {
+    if (max_val == 0.0) {
       k++;
       continue;
     }
 
-    Array_double *swp = m_cp->data[max_row];
-    m_cp->data[max_row] = m_cp->data[h];
-    m_cp->data[h] = swp;
+    if (max_row != h) {
+      Array_double *swp = m_cp->data[max_row];
+      m_cp->data[max_row] = m_cp->data[h];
+      m_cp->data[h] = swp;
+    }
 
     for (uint64_t row = h + 1; row < m_cp->rows; row++) {
       double factor = m_cp->data[row]->data[k] / m_cp->data[h]->data[k];
@@ -225,16 +227,18 @@ Array_double *solve_matrix_gaussian(Matrix_double *m, Array_double *b) {
 Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
                            double l2_convergence_tolerance,
                            size_t max_iterations) {
+  assert(m->rows == m->cols);
+  assert(b->size == m->cols);
   size_t iter = max_iterations;
 
-  Array_double *x_k = InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+  Array_double *x_k = InitArrayWithSize(double, b->size, 0.0);
   Array_double *x_k_1 =
       InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
 
   while ((--iter) > 0 && l2_distance(x_k_1, x_k) > l2_convergence_tolerance) {
-    for (size_t i = 0; i < x_k->size; i++) {
+    for (size_t i = 0; i < m->rows; i++) {
       double delta = 0.0;
-      for (size_t j = 0; j < x_k->size; j++) {
+      for (size_t j = 0; j < m->cols; j++) {
         if (i == j)
           continue;
         delta += m->data[i]->data[j] * x_k->data[j];
@@ -245,6 +249,39 @@ Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
     Array_double *tmp = x_k;
     x_k = x_k_1;
     x_k_1 = tmp;
+  }
+
+  free_vector(x_k);
+  return x_k_1;
+}
+
+Array_double *gauss_siedel_solve(Matrix_double *m, Array_double *b,
+                                 double l2_convergence_tolerance,
+                                 size_t max_iterations) {
+  assert(m->rows == m->cols);
+  assert(b->size == m->cols);
+  size_t iter = max_iterations;
+
+  Array_double *x_k = InitArrayWithSize(double, b->size, 0.0);
+  Array_double *x_k_1 =
+      InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+
+  while ((--iter) > 0) {
+    for (size_t i = 0; i < x_k->size; i++)
+      x_k->data[i] = x_k_1->data[i];
+
+    for (size_t i = 0; i < m->rows; i++) {
+      double delta = 0.0;
+      for (size_t j = 0; j < m->cols; j++) {
+        if (i == j)
+          continue;
+        delta += m->data[i]->data[j] * x_k_1->data[j];
+      }
+      x_k_1->data[i] = (b->data[i] - delta) / m->data[i]->data[i];
+    }
+
+    if (l2_distance(x_k_1, x_k) <= l2_convergence_tolerance)
+      break;
   }
 
   free_vector(x_k);

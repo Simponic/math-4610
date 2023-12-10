@@ -93,5 +93,8 @@ extern double rand_from(double min, double max);
 
 extern Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
                                   double tolerance, size_t max_iterations);
+extern Array_double *gauss_siedel_solve(Matrix_double *m, Array_double *b,
+                                        double l2_convergence_tolerance,
+                                        size_t max_iterations);
 
 #endif // LIZFCM_H

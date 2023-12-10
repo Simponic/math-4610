@@ -1,4 +1,4 @@
-#+TITLE: LIZFCM Software Manual (v0.5)
+#+TITLE: LIZFCM Software Manual (v0.6)
 #+AUTHOR: Elizabeth Hunt
 #+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 #+LATEX: \setlength\parindent{0pt}
@@ -544,30 +544,32 @@ applying reduction to all other rows. The general idea is available at [[https:/
 
 #+BEGIN_SRC c
 Matrix_double *gaussian_elimination(Matrix_double *m) {
-  uint64_t h = 0;
-  uint64_t k = 0;
+  uint64_t h = 0, k = 0;
 
   Matrix_double *m_cp = copy_matrix(m);
 
   while (h < m_cp->rows && k < m_cp->cols) {
-    uint64_t max_row = 0;
-    double total_max = 0.0;
+    uint64_t max_row = h;
+    double max_val = 0.0;
 
     for (uint64_t row = h; row < m_cp->rows; row++) {
-      double this_max = c_max(fabs(m_cp->data[row]->data[k]), total_max);
-      if (c_max(this_max, total_max) == this_max) {
+      double val = fabs(m_cp->data[row]->data[k]);
+      if (val > max_val) {
+        max_val = val;
         max_row = row;
       }
     }
 
-    if (max_row == 0) {
+    if (max_val == 0.0) {
       k++;
       continue;
     }
 
-    Array_double *swp = m_cp->data[max_row];
-    m_cp->data[max_row] = m_cp->data[h];
-    m_cp->data[h] = swp;
+    if (max_row != h) {
+      Array_double *swp = m_cp->data[max_row];
+      m_cp->data[max_row] = m_cp->data[h];
+      m_cp->data[h] = swp;
+    }
 
     for (uint64_t row = h + 1; row < m_cp->rows; row++) {
       double factor = m_cp->data[row]->data[k] / m_cp->data[h]->data[k];
@@ -743,7 +745,7 @@ void format_matrix_into(Matrix_double *m, char *s) {
     strcpy(s, "empty");
 
   for (size_t y = 0; y < m->rows; ++y) {
-    char row_s[256];
+    char row_s[5192];
     strcpy(row_s, "");
 
     format_vector_into(m->data[y], row_s);
@@ -1159,8 +1161,112 @@ Matrix_double *leslie_matrix(Array_double *age_class_surivor_ratio,
   return leslie;
 }
 #+END_SRC
+** Jacobi / Gauss-Siedel
+*** ~jacobi_solve~
++ Author: Elizabeth Hunt
++ Name: ~jacobi_solve~
++ Location: ~src/matrix.c~
++ Input: a pointer to a diagonally dominant square matrix $m$, a vector representing
+  the value $b$ in $mx = b$, a double representing the maximum distance between
+  the solutions produced by iteration $i$ and $i+1$ (by L2 norm a.k.a cartesian
+  distance), and a ~max_iterations~ which we force stop.
++ Output: the converged-upon solution $x$ to $mx = b$
+#+BEGIN_SRC c
+Array_double *jacobi_solve(Matrix_double *m, Array_double *b,
+                           double l2_convergence_tolerance,
+                           size_t max_iterations) {
+  assert(m->rows == m->cols);
+  assert(b->size == m->cols);
+  size_t iter = max_iterations;
+
+  Array_double *x_k = InitArrayWithSize(double, b->size, 0.0);
+  Array_double *x_k_1 =
+      InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+
+  while ((--iter) > 0 && l2_distance(x_k_1, x_k) > l2_convergence_tolerance) {
+    for (size_t i = 0; i < m->rows; i++) {
+      double delta = 0.0;
+      for (size_t j = 0; j < m->cols; j++) {
+        if (i == j)
+          continue;
+        delta += m->data[i]->data[j] * x_k->data[j];
+      }
+      x_k_1->data[i] = (b->data[i] - delta) / m->data[i]->data[i];
+    }
+
+    Array_double *tmp = x_k;
+    x_k = x_k_1;
+    x_k_1 = tmp;
+  }
+
+  free_vector(x_k);
+  return x_k_1;
+}
+#+END_SRC
+
+*** ~gauss_siedel_solve~
++ Author: Elizabeth Hunt
++ Name: ~gauss_siedel_solve~
++ Location: ~src/matrix.c~
++ Input: a pointer to a [[https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method][diagonally dominant or symmetric and positive definite]]
+  square matrix $m$, a vector representing
+  the value $b$ in $mx = b$, a double representing the maximum distance between
+  the solutions produced by iteration $i$ and $i+1$ (by L2 norm a.k.a cartesian
+  distance), and a ~max_iterations~ which we force stop.
++ Output: the converged-upon solution $x$ to $mx = b$
++ Description: we use almost the exact same method as ~jacobi_solve~ but modify
+  only one array in accordance to the Gauss-Siedel method, but which is necessarily
+  copied before due to the convergence check.
+#+BEGIN_SRC c
+
+Array_double *gauss_siedel_solve(Matrix_double *m, Array_double *b,
+                                 double l2_convergence_tolerance,
+                                 size_t max_iterations) {
+  assert(m->rows == m->cols);
+  assert(b->size == m->cols);
+  size_t iter = max_iterations;
+
+  Array_double *x_k = InitArrayWithSize(double, b->size, 0.0);
+  Array_double *x_k_1 =
+      InitArrayWithSize(double, b->size, rand_from(0.1, 10.0));
+
+  while ((--iter) > 0) {
+    for (size_t i = 0; i < x_k->size; i++)
+      x_k->data[i] = x_k_1->data[i];
+
+    for (size_t i = 0; i < m->rows; i++) {
+      double delta = 0.0;
+      for (size_t j = 0; j < m->cols; j++) {
+        if (i == j)
+          continue;
+        delta += m->data[i]->data[j] * x_k_1->data[j];
+      }
+      x_k_1->data[i] = (b->data[i] - delta) / m->data[i]->data[i];
+    }
+
+    if (l2_distance(x_k_1, x_k) <= l2_convergence_tolerance)
+      break;
+  }
+
+  free_vector(x_k);
+  return x_k_1;
+}
+#+END_SRC
 
 ** Appendix / Miscellaneous
+*** Random
++ Author: Elizabeth Hunt
++ Name: ~rand_from~
++ Location: ~src/rand.c~
++ Input: a pair of doubles, min and max to generate a random number min
+  \le x \le max
++ Output: a random double in the constraints shown
+
+#+BEGIN_SRC c
+double rand_from(double min, double max) {
+  return min + (rand() / (RAND_MAX / (max - min)));
+}
+#+END_SRC
 *** Data Types
 **** ~Line~
 + Author: Elizabeth Hunt

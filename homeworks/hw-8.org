@@ -4,14 +4,34 @@
 #+LATEX: \setlength\parindent{0pt}
 #+OPTIONS: toc:nil
 
-TODO: Update LIZFCM org file with jacobi solve, format_matrix_into, rand
+TODO: Update LIZFCM org file with jacobi solve
 
 * Question One
 See ~UTEST(jacobi, solve_jacobi)~ in ~test/jacobi.t.c~ and the entry
 ~Jacobi -> solve_jacobi~ in the LIZFCM API documentation.
 * Question Two
-A problem arises when using the Jacobi method to solve for the previous population
-distribution, $n_k$, from $Ln_{k} = n_{k+1}$, because a Leslie matrix is not diagonally
-dominant and will cause a division by zero. Likewise, we cannot factor it into $L$
-and $U$ terms and apply back substitution because pivot points are zero.
+We cannot just perform the Jacobi algorithm on a Leslie matrix since
+it is obviously not diagonally dominant - which is a requirement. It is
+certainly not always the case, but, if a Leslie matrix $L$ is invertible, we can
+first perform gaussian elimination on $L$ augmented with $n_{k+1}$
+to obtain $n_k$ with the Jacobi method. See ~UTEST(jacobi, leslie_solve)~
+in ~test/jacobi.t.c~ for an example wherein this method is tested on a Leslie
+matrix to recompute a given initial population distribution.
+
+In terms of accuracy, an LU factorization and back substitution approach will
+always be as correct as possible within the limits of computation; it's a
+direct solution method. It's simply the nature of the Jacobi algorithm being
+a convergent solution that determines its accuracy.
+
+LU factorization also performs in order $O(n^3)$ runtime for an $n \times n$
+matrix, whereas the Jacobi algorithm runs in order $O(k n^2) = O(n^2)$ but with the
+con that $k$ is given by the convergence criteria, which might end up worse in
+some cases, than LU.
+
 * Question Three
+See ~UTEST(jacobi, gauss_siedel_solve)~ in ~test/jacobi.t.c~ which runs the same
+unit test as ~UTEST(jacobi, solve_jacobi)~ but using the
+~Jacobi -> gauss_siedel_solve~ method as documented in the LIZFCM API reference.
+
+* Question Four, Five
+

@@ -1,19 +1,45 @@
-#+TITLE: Homework 7
-#+AUTHOR: Elizabeth Hunt
-#+LATEX_HEADER: \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
-#+LATEX: \setlength\parindent{0pt}
-#+OPTIONS: toc:nil
+% Created 2023-12-09 Sat 21:43
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
+\author{Elizabeth Hunt}
+\date{\today}
+\title{Homework 7}
+\hypersetup{
+ pdfauthor={Elizabeth Hunt},
+ pdftitle={Homework 7},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
+ pdflang={English}}
+\begin{document}
 
-* Question One
-See ~UTEST(jacobi, solve_jacobi)~ in ~test/jacobi.t.c~ and the entry
-~Jacobi / Gauss-Siedel -> solve_jacobi~ in the LIZFCM API documentation.
-* Question Two
+\maketitle
+\setlength\parindent{0pt}
+
+\section{Question One}
+\label{sec:orgb6d5cda}
+See \texttt{UTEST(jacobi, solve\_jacobi)} in \texttt{test/jacobi.t.c} and the entry
+\texttt{Jacobi / Gauss-Siedel -> solve\_jacobi} in the LIZFCM API documentation.
+\section{Question Two}
+\label{sec:org9786314}
 We cannot just perform the Jacobi algorithm on a Leslie matrix since
 it is obviously not diagonally dominant - which is a requirement. It is
-certainly not always the case, but, if a Leslie matrix $L$ is invertible, we can
-first perform gaussian elimination on $L$ augmented with $n_{k+1}$
-to obtain $n_k$ with the Jacobi method. See ~UTEST(jacobi, leslie_solve)~
-in ~test/jacobi.t.c~ for an example wherein this method is tested on a Leslie
+certainly not always the case, but, if a Leslie matrix \(L\) is invertible, we can
+first perform gaussian elimination on \(L\) augmented with \(n_{k+1}\)
+to obtain \(n_k\) with the Jacobi method. See \texttt{UTEST(jacobi, leslie\_solve)}
+in \texttt{test/jacobi.t.c} for an example wherein this method is tested on a Leslie
 matrix to recompute a given initial population distribution.
 
 In terms of accuracy, an LU factorization and back substitution approach will
@@ -21,60 +47,66 @@ always be as correct as possible within the limits of computation; it's a
 direct solution method. It's simply the nature of the Jacobi algorithm being
 a convergent solution that determines its accuracy.
 
-LU factorization also performs in order $O(n^3)$ runtime for an $n \times n$
-matrix, whereas the Jacobi algorithm runs in order $O(k n^2) = O(n^2)$ on average
-but with the con that $k$ is given by some function on both the convergence criteria and the number of
+LU factorization also performs in order \(O(n^3)\) runtime for an \(n \times n\)
+matrix, whereas the Jacobi algorithm runs in order \(O(k n^2) = O(n^2)\) on average
+but with the con that \(k\) is given by some function on both the convergence criteria and the number of
 nonzero entries in the matrix - which might end up worse in some cases than the LU decomp approach.
 
-* Question Three
-See ~UTEST(jacobi, gauss_siedel_solve)~ in ~test/jacobi.t.c~ which runs the same
-unit test as ~UTEST(jacobi, solve_jacobi)~ but using the
-~Jacobi / Gauss-Siedel -> gauss_siedel_solve~ method as documented in the LIZFCM API reference.
+\section{Question Three}
+\label{sec:org0ea87d0}
+See \texttt{UTEST(jacobi, gauss\_siedel\_solve)} in \texttt{test/jacobi.t.c} which runs the same
+unit test as \texttt{UTEST(jacobi, solve\_jacobi)} but using the
+\texttt{Jacobi / Gauss-Siedel -> gauss\_siedel\_solve} method as documented in the LIZFCM API reference.
 
-* Question Four, Five
+\section{Question Four, Five}
+\label{sec:org8eea2ae}
 We produce the following operation counts (by hackily adding the operation count as the last element
 to the solution vector) and errors - the sum of each vector elements' absolute value away from 1.0
 using the proceeding patch and unit test.
 
-|  N | JAC opr |  JAC err | GS opr |   GS err | LU opr |   LU err |
-|  5 |    1622 | 0.001244 |    577 | 0.000098 |    430 | 0.000000 |
-|  6 |    2812 | 0.001205 |    775 | 0.000080 |    681 | 0.000000 |
-|  7 |    5396 | 0.001187 |    860 | 0.000178 |   1015 | 0.000000 |
-|  8 |    5618 | 0.001468 |   1255 | 0.000121 |   1444 | 0.000000 |
-|  9 |    7534 | 0.001638 |   1754 | 0.000091 |   1980 | 0.000000 |
-| 10 |   10342 | 0.001425 |   1847 | 0.000435 |   2635 | 0.000000 |
-| 11 |   12870 | 0.001595 |   2185 | 0.000368 |   3421 | 0.000000 |
-| 12 |   17511 | 0.001860 |   2912 | 0.000322 |   4350 | 0.000000 |
-| 13 |   16226 | 0.001631 |   3362 | 0.000270 |   5434 | 0.000000 |
-| 14 |   34333 | 0.001976 |   3844 | 0.000121 |   6685 | 0.000000 |
-| 15 |   38474 | 0.001922 |   4358 | 0.000311 |   8115 | 0.000000 |
-| 16 |   40405 | 0.002061 |   4904 | 0.000204 |   9736 | 0.000000 |
-| 17 |   58518 | 0.002125 |   5482 | 0.000311 |  11560 | 0.000000 |
-| 18 |   68079 | 0.002114 |   6092 | 0.000279 |  13599 | 0.000000 |
-| 19 |   95802 | 0.002159 |   6734 | 0.000335 |  15865 | 0.000000 |
-| 20 |   85696 | 0.002141 |   7408 | 0.000289 |  18370 | 0.000000 |
-| 21 |   89026 | 0.002316 |   8114 | 0.000393 |  21126 | 0.000000 |
-| 22 |  101537 | 0.002344 |   8852 | 0.000414 |  24145 | 0.000000 |
-| 23 |  148040 | 0.002323 |   9622 | 0.000230 |  27439 | 0.000000 |
-| 24 |  137605 | 0.002348 |  10424 | 0.000213 |  31020 | 0.000000 |
-| 25 |  169374 | 0.002409 |  11258 | 0.000894 |  34900 | 0.000000 |
-| 26 |  215166 | 0.002502 |  12124 | 0.000564 |  39091 | 0.000000 |
-| 27 |  175476 | 0.002616 |  13022 | 0.000535 |  43605 | 0.000000 |
-| 28 |  268454 | 0.002651 |  13952 | 0.000690 |  48454 | 0.000000 |
-| 29 |  267034 | 0.002697 |  14914 | 0.000675 |  53650 | 0.000000 |
-| 30 |  277193 | 0.002686 |  15908 | 0.000542 |  59205 | 0.000000 |
-| 31 |  336792 | 0.002736 |  16934 | 0.000390 |  65131 | 0.000000 |
-| 32 |  293958 | 0.002741 |  17992 | 0.000660 |  71440 | 0.000000 |
-| 33 |  323638 | 0.002893 |  19082 | 0.001072 |  78144 | 0.000000 |
-| 34 |  375104 | 0.003001 |  20204 | 0.001018 |  85255 | 0.000000 |
-| 35 |  436092 | 0.003004 |  21358 | 0.000912 |  92785 | 0.000000 |
-| 36 |  538143 | 0.003005 |  22544 | 0.000954 | 100746 | 0.000000 |
-| 37 |  511886 | 0.003029 |  23762 | 0.000462 | 109150 | 0.000000 |
-| 38 |  551332 | 0.003070 |  25012 | 0.000996 | 118009 | 0.000000 |
-| 39 |  592750 | 0.003110 |  26294 | 0.000989 | 127335 | 0.000000 |
-| 40 |  704208 | 0.003165 |  27608 | 0.000583 | 137140 | 0.000000 |
+\begin{center}
+\begin{tabular}{rrrrrrr}
+N & JAC opr & JAC err & GS opr & GS err & LU opr & LU err\\[0pt]
+5 & 1622 & 0.001244 & 577 & 0.000098 & 430 & 0.000000\\[0pt]
+6 & 2812 & 0.001205 & 775 & 0.000080 & 681 & 0.000000\\[0pt]
+7 & 5396 & 0.001187 & 860 & 0.000178 & 1015 & 0.000000\\[0pt]
+8 & 5618 & 0.001468 & 1255 & 0.000121 & 1444 & 0.000000\\[0pt]
+9 & 7534 & 0.001638 & 1754 & 0.000091 & 1980 & 0.000000\\[0pt]
+10 & 10342 & 0.001425 & 1847 & 0.000435 & 2635 & 0.000000\\[0pt]
+11 & 12870 & 0.001595 & 2185 & 0.000368 & 3421 & 0.000000\\[0pt]
+12 & 17511 & 0.001860 & 2912 & 0.000322 & 4350 & 0.000000\\[0pt]
+13 & 16226 & 0.001631 & 3362 & 0.000270 & 5434 & 0.000000\\[0pt]
+14 & 34333 & 0.001976 & 3844 & 0.000121 & 6685 & 0.000000\\[0pt]
+15 & 38474 & 0.001922 & 4358 & 0.000311 & 8115 & 0.000000\\[0pt]
+16 & 40405 & 0.002061 & 4904 & 0.000204 & 9736 & 0.000000\\[0pt]
+17 & 58518 & 0.002125 & 5482 & 0.000311 & 11560 & 0.000000\\[0pt]
+18 & 68079 & 0.002114 & 6092 & 0.000279 & 13599 & 0.000000\\[0pt]
+19 & 95802 & 0.002159 & 6734 & 0.000335 & 15865 & 0.000000\\[0pt]
+20 & 85696 & 0.002141 & 7408 & 0.000289 & 18370 & 0.000000\\[0pt]
+21 & 89026 & 0.002316 & 8114 & 0.000393 & 21126 & 0.000000\\[0pt]
+22 & 101537 & 0.002344 & 8852 & 0.000414 & 24145 & 0.000000\\[0pt]
+23 & 148040 & 0.002323 & 9622 & 0.000230 & 27439 & 0.000000\\[0pt]
+24 & 137605 & 0.002348 & 10424 & 0.000213 & 31020 & 0.000000\\[0pt]
+25 & 169374 & 0.002409 & 11258 & 0.000894 & 34900 & 0.000000\\[0pt]
+26 & 215166 & 0.002502 & 12124 & 0.000564 & 39091 & 0.000000\\[0pt]
+27 & 175476 & 0.002616 & 13022 & 0.000535 & 43605 & 0.000000\\[0pt]
+28 & 268454 & 0.002651 & 13952 & 0.000690 & 48454 & 0.000000\\[0pt]
+29 & 267034 & 0.002697 & 14914 & 0.000675 & 53650 & 0.000000\\[0pt]
+30 & 277193 & 0.002686 & 15908 & 0.000542 & 59205 & 0.000000\\[0pt]
+31 & 336792 & 0.002736 & 16934 & 0.000390 & 65131 & 0.000000\\[0pt]
+32 & 293958 & 0.002741 & 17992 & 0.000660 & 71440 & 0.000000\\[0pt]
+33 & 323638 & 0.002893 & 19082 & 0.001072 & 78144 & 0.000000\\[0pt]
+34 & 375104 & 0.003001 & 20204 & 0.001018 & 85255 & 0.000000\\[0pt]
+35 & 436092 & 0.003004 & 21358 & 0.000912 & 92785 & 0.000000\\[0pt]
+36 & 538143 & 0.003005 & 22544 & 0.000954 & 100746 & 0.000000\\[0pt]
+37 & 511886 & 0.003029 & 23762 & 0.000462 & 109150 & 0.000000\\[0pt]
+38 & 551332 & 0.003070 & 25012 & 0.000996 & 118009 & 0.000000\\[0pt]
+39 & 592750 & 0.003110 & 26294 & 0.000989 & 127335 & 0.000000\\[0pt]
+40 & 704208 & 0.003165 & 27608 & 0.000583 & 137140 & 0.000000\\[0pt]
+\end{tabular}
+\end{center}
 
-#+BEGIN_SRC
+\begin{verbatim}
 diff --git a/src/matrix.c b/src/matrix.c
 index 901a426..af5529f 100644
 --- a/src/matrix.c
@@ -233,11 +265,11 @@ index 901a426..af5529f 100644
 +  free_vector(x_k_1);
 +  return copy;
  }
-#+END_SRC
+\end{verbatim}
 
 
 And this unit test:
-#+BEGIN_SRC c
+\begin{verbatim}
 UTEST(hw_8, p4_5) {
   printf("| N | JAC opr | JAC err | GS opr | GS err | LU opr | LU err | \n");
 
@@ -308,4 +340,5 @@ UTEST(hw_8, p4_5) {
            oprs[1], errs[1], oprs[2], errs[2]);
   }
 }
-#+END_SRC
+\end{verbatim}
+\end{document}

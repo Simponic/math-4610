@@ -1,4 +1,4 @@
-% Created 2023-12-09 Sat 21:43
+% Created 2023-12-09 Sat 22:06
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -15,10 +15,10 @@
 \notindent \notag  \usepackage{amsmath} \usepackage[a4paper,margin=1in,portrait]{geometry}
 \author{Elizabeth Hunt}
 \date{\today}
-\title{Homework 7}
+\title{Homework 8}
 \hypersetup{
  pdfauthor={Elizabeth Hunt},
- pdftitle={Homework 7},
+ pdftitle={Homework 8},
  pdfkeywords={},
  pdfsubject={},
  pdfcreator={Emacs 28.2 (Org mode 9.7-pre)}, 
@@ -29,11 +29,11 @@
 \setlength\parindent{0pt}
 
 \section{Question One}
-\label{sec:orgb6d5cda}
+\label{sec:org800c743}
 See \texttt{UTEST(jacobi, solve\_jacobi)} in \texttt{test/jacobi.t.c} and the entry
 \texttt{Jacobi / Gauss-Siedel -> solve\_jacobi} in the LIZFCM API documentation.
 \section{Question Two}
-\label{sec:org9786314}
+\label{sec:org6121bef}
 We cannot just perform the Jacobi algorithm on a Leslie matrix since
 it is obviously not diagonally dominant - which is a requirement. It is
 certainly not always the case, but, if a Leslie matrix \(L\) is invertible, we can
@@ -53,13 +53,13 @@ but with the con that \(k\) is given by some function on both the convergence cr
 nonzero entries in the matrix - which might end up worse in some cases than the LU decomp approach.
 
 \section{Question Three}
-\label{sec:org0ea87d0}
+\label{sec:org11282e6}
 See \texttt{UTEST(jacobi, gauss\_siedel\_solve)} in \texttt{test/jacobi.t.c} which runs the same
 unit test as \texttt{UTEST(jacobi, solve\_jacobi)} but using the
 \texttt{Jacobi / Gauss-Siedel -> gauss\_siedel\_solve} method as documented in the LIZFCM API reference.
 
 \section{Question Four, Five}
-\label{sec:org8eea2ae}
+\label{sec:org22b52a9}
 We produce the following operation counts (by hackily adding the operation count as the last element
 to the solution vector) and errors - the sum of each vector elements' absolute value away from 1.0
 using the proceeding patch and unit test.
